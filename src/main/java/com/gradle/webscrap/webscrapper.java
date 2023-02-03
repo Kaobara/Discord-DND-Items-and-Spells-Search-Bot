@@ -31,7 +31,7 @@ public class webscrapper {
         HtmlPage page = null;
 
         try {
-            page = webClient.getPage("https://foodnetwork.co.uk/italian-family-dinners/");
+            page = webClient.getPage("http://dnd5e.wikidot.com/spell:friends");
 
             webClient.getCurrentWindow().getJobManager().removeAllJobs();
             webClient.close();
@@ -42,7 +42,25 @@ public class webscrapper {
         }
 
         // extract specific sections
-        String title = page.getTitleText();
-        System.out.println("Page Title: " + title);
+//        String title = page.getTitleText();
+//        System.out.println("Page Title: " + title);
+
+//        HtmlElement body = page.getBody();
+//        String bodyText = body.getTextContent();
+//        System.out.println("Body: " + bodyText);
+
+        List<DomElement> elements = page.getElementsById("page-content");
+        for( DomElement element : elements) {
+            String textcontent = element.getTextContent();
+            System.out.println(textcontent);
+        }
+
+        System.out.println("Content Type: " + page.getContentType());
+
+//        List<HtmlAnchor> links = page.getAnchors();
+//        for (HtmlAnchor link : links) {
+//            String href = link.getHrefAttribute();
+//            System.out.println("Link: " + href);
+//        }
     }
 }
