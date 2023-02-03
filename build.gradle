@@ -10,6 +10,16 @@ jar {
     }
 }
 
+// From https://stackoverflow.com/questions/60228404/no-tests-found-for-given-includes-when-running-gradle-tests-in-intellij-idea
+// Gradle don't know where to look for tests
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    testLogging {     // This is for logging and can be removed.
+        events("passed", "skipped", "failed")
+    }
+}
+
 group 'org.example'
 version '1.0-SNAPSHOT'
 
@@ -25,6 +35,11 @@ dependencies {
     // Implementation for Java web-scraping
     // Installs Html Unit into project
     implementation 'net.sourceforge.htmlunit:htmlunit:2.51.0'
+
+    // Selenium Dependencies for Dynamic HTML pages
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.8.0'
+
 }
 
 test {
