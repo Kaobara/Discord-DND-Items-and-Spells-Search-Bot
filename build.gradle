@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'application'
 }
 
 jar {
@@ -20,8 +21,16 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:3.0.5'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    // Implementation for Java web-scraping
+    // Installs Html Unit into project
+    implementation 'net.sourceforge.htmlunit:htmlunit:2.51.0'
 }
 
 test {
     useJUnitPlatform()
+}
+
+application {
+    mainClassName = 'com.gradle.tutorial.FizzBuzzProcessor'
 }
