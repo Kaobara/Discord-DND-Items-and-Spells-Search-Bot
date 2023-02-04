@@ -40,6 +40,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.8.0'
 
+    // Discord4J dependency
+    implementation 'com.discord4j:discord4j-core:VERSION'
+
+    // Logging dependency
+    implementation 'ch.qos.logback:logback-classic:$logback_version'
 }
 
 test {
