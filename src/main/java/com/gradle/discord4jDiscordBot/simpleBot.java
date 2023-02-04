@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public class simpleBot {
     public static void main(String[] args) {
-        DiscordClient client = DiscordClient.create("OTM1NzgwODI4MzY0MDI5OTky.G96VpA.jsYhiQczCvBnzCSB45UNYqjjwgP8F6rxatZg80");
+        DiscordClient client = DiscordClient.create("TOKEN");
 
         Mono<Void> login = client .withGateway((GatewayDiscordClient gateway) -> Mono.empty());
 
