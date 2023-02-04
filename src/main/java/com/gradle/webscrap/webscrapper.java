@@ -33,7 +33,7 @@ public class webscrapper {
         HtmlPage page = null;
 
         try {
-            page = webClient.getPage("https://5e.tools/races.html");
+            page = webClient.getPage("http://dnd5e.wikidot.com/spell:dancing-lights");
 
             webClient.getCurrentWindow().getJobManager().removeAllJobs();
             webClient.close();
@@ -60,6 +60,13 @@ public class webscrapper {
 //            String textcontent = element.getTextContent();
 //            System.out.println(textcontent);
           }
+
+          List<DomElement> staticEelements = page.getElementsById("page-content");
+        for( DomElement element : staticEelements) {
+            String textcontent = element.getTextContent();
+            System.out.println(textcontent);
+        }
+
 
         System.out.println("Content Type: " + page.getContentType());
 

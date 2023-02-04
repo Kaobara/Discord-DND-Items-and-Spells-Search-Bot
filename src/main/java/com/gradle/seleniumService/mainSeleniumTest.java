@@ -1,13 +1,14 @@
 package com.gradle.seleniumService;
-import org.junit.*;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
+public class mainSeleniumTest {
+    private static final String URL = "https://5e.tools/races.html";
 
-public class TestImplementation {
-
+//    private final ChromeDriver chromeDriver =
     private WebDriver driver;
 
     @BeforeClass
@@ -20,16 +21,10 @@ public class TestImplementation {
         driver = new ChromeDriver();
     }
 
-    @After
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
+    public void scrape(final String value){
+        driver.get(URL + value);
     }
 
-    @Test
-    public void verifyGitHubTitle() {
-        driver.get("https://www.github.com");
-        assertThat(driver.getTitle(), containsString("GitHub"));
-    }
+
+
 }
