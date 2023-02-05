@@ -11,7 +11,7 @@ public class mainDriver {
         ScraperService service = new ScraperService();
 
         SpellSearch spellSearch = new SpellSearch();
-        spellSearch.searchSpellInfo("Modify Memory");
+        spellSearch.searchSpellInfo("Call Lightning");
     }
 
 

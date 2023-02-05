@@ -4,33 +4,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SpellFactory {
-    final private int SOURCE_I = 0;
-    final private int LEVEL_TYPE_I = 1;
-    final private int CASTING_TIME_I = 2;
-    final private int RANGE_I = 3;
-    final private int COMPONENTS_I = 4;
-    final private int DURATION_I = 5;
-    final private int UPCAST = -2;
-    final private int SPELL_LIST = -1;
+    final private int TOP_I = 0;
+    final private int UPCAST_I = -2;
+//    final private int SPELL_LIST_I = -1;
+    final private int BOTTOM_I = -1;
+
+    private ArrayList<String> contentList;
 
     public Spell createSpell(String spellName, String fullContent) {
-        ArrayList<String> contentList = sortContents(fullContent);
+        contentList = sortContents(fullContent);
 
-//        contentList.
+        String source = content(TOP_I, "Source: ");
+        String levelSchool = content(TOP_I, "");
+        String castingTime = content(TOP_I, "Casting Time: ");
+        String range = content(TOP_I, "Range: ");
+        String components = content(TOP_I, "Components: ");
+        String duration = content(TOP_I, "Duration: ");
 
-        String source = contentList.get(SOURCE_I).replaceFirst("Source: ", "");
-        String levelType = contentList.get(LEVEL_TYPE_I);
-        String castingTime = contentList.get(CASTING_TIME_I).replaceFirst("Casting Time: ", "");
-        String range = contentList.get(RANGE_I).replaceFirst("Range: ", "");
-        String components = contentList.get(SOURCE_I).replaceFirst("Components : ", "");
-        String duration = contentList.get(SOURCE_I).replaceFirst("Duration: ", "");
-        if(contentList.get(UPCAST).contains("At Higher Levels. ")) {
-            String upcast = contentList.get(UPCAST).replaceFirst("At Higher Levels. ", "");
+        String spellList = content(contentList.size() + BOTTOM_I, "Spell Lists. ");
+
+        String upcast = "";
+        if(contentList.get(contentList.size() + BOTTOM_I).contains("At Higher Levels. ")) {
+            upcast = content(contentList.size() + BOTTOM_I, "At Higher Levels. ");
         }
-        String spellList = contentList.get(SPELL_LIST).replaceFirst("Spell Lists. ", "");
+
+        String description = "";
+        for(String content : contentList) {
+            if(description.isEmpty()) {
+                description = content;
+            } else {
+                description += "\n" + content;
+            }
+        }
 
 
-        Spell spell = new Spell(spellName, fullContent);
+        Spell spell = new Spell(spellName, source, levelSchool, castingTime, range, components, duration,
+                description, upcast, spellList);
         return spell;
 
     }
@@ -43,13 +52,19 @@ public class SpellFactory {
                 Arrays.asList(strSplit)
         );
 
-        // Remove all empty lines
         contentList.removeAll(Arrays.asList("", null));
         return contentList;
     }
 
-    private String content(int contentIndex, ArrayList<String> contentList, String stringRemoval) {
-        String content = contentList.get(contentIndex).replaceFirst(stringRemoval, "");
+    private String content(int contentIndex, String stringRemoval) {
+        String content;
+        if(stringRemoval != "") {
+            content = contentList.get(contentIndex).replaceFirst(stringRemoval, "");
+        } else {
+            content = contentList.get(contentIndex);
+        }
+        contentList.remove(contentIndex);
         return content;
     }
+
 }

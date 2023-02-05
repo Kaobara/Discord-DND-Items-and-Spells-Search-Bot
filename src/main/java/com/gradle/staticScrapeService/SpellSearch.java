@@ -33,8 +33,11 @@ public class SpellSearch extends ScraperService {
 //            System.out.println(spellContent);
 //        }
 //        System.out.println(spellContent);
-        this.spell = new Spell(spellName, spellContent);
+        SpellFactory spellFactory = new SpellFactory();
+        spell = spellFactory.createSpell(spellName, spellContent);
+//        this.spell = new Spell(spellName, spellContent);
 //        spell.printNameContent();
 //        spell.sortContents();
+        spell.printContents();
     }
 }

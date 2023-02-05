@@ -4,62 +4,50 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Spell {
-    private String name, source, school, level, castingTime, range, components, duration, description, higherLevels, spellList;
-    private boolean ritual, concentration, canUpcast;
-    private String fullContent;
+    private String name, source, levelSchool, castingTime, range, components, duration, description, upcast, spellList;
+    private boolean ritual = false, concentration = false, canUpcast = false;
 
-    public Spell(String name, String fullContent) {
+    public Spell(String name, String source, String levelSchool, String castingTime,
+                 String range, String components, String duration, String description,
+                 String upcast, String spellList) {
         this.name = name;
-        this.fullContent = fullContent;
-    }
-
-    public void printNameContent() {
-        System.out.println(name + "\n" + fullContent);
-    }
-
-
-
-    public void setSource(String source) {
         this.source = source;
-    }
 
-    public void setSchool(String school) {
-        this.school = school;
-    }
+        this.levelSchool = levelSchool;
+        if(this.levelSchool.contains("ritual")) {
+            ritual = true;
+        }
 
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public void setCastingTime(String castingTime) {
         this.castingTime = castingTime;
-    }
-
-    public void setRange(String range) {
         this.range = range;
-    }
-
-    public void setComponents(String components) {
         this.components = components;
-    }
 
-    public void setDuration(String duration) {
         this.duration = duration;
-    }
+        if(this.duration.contains("Concentration")) {
+            concentration = true;
+        }
 
-    public void setDescription(String description) {
         this.description = description;
-    }
 
-    public void setHigherLevels(String higherLevels) {
-        this.higherLevels = higherLevels;
-    }
-
-    public void setSpellList(String spellList) {
+        this.upcast = upcast;
+        if(!this.upcast.isEmpty()) {
+            canUpcast = true;
+        }
         this.spellList = spellList;
     }
 
-    public void setCanUpcast(boolean canUpcast) {
-        this.canUpcast = canUpcast;
+    public void printContents() {
+        System.out.println(name);
+        System.out.println(source);
+        System.out.println(levelSchool);
+        System.out.println(castingTime);
+        System.out.println(range);
+        System.out.println(components);
+        System.out.println(duration);
+        System.out.println(description);
+        if(canUpcast){
+            System.out.println(upcast);
+        }
+        System.out.println(spellList);
     }
 }
