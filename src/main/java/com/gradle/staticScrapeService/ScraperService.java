@@ -32,22 +32,24 @@ public class ScraperService {
             System.out.println("An error occurred: " + e);
             System.exit(1);
         } catch (FailingHttpStatusCodeException e) {
-            System.out.println("An error occured : " + e);
-            System.out.println("Please check that you correctly typed the spell name");
+            // Website sends failing http status exception
+            // Possible reasoning: URL does not exist
+            System.out.println("An error occurred : " + e);
+            System.out.println("Please check that your input is correct");
             System.exit(0);
         }
-//
-//        if(page == null) {
-//            System.out.println("AAAAAAAAAAAAAAAAAA");
-//        }
+
         return page;
     }
 
-    public void getContent(HtmlPage page, String elementId) {
+    public ArrayList<String> getContentByID(HtmlPage page, String elementId) {
         List<DomElement> elements = page.getElementsById(elementId);
+        ArrayList<String> textContents = new ArrayList<>();
         for(DomElement element : elements) {
-            System.out.println(element.getTextContent());
+//            System.out.println(element.getTextContent());
+            textContents.add(element.getTextContent());
         }
+        return textContents;
     }
 
     public void getAllLinks(HtmlPage page) {
