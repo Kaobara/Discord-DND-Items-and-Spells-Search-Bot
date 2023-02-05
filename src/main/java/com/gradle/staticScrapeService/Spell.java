@@ -50,4 +50,14 @@ public class Spell {
         }
         System.out.println(spellList);
     }
+
+    public String getContents() {
+        String content = name + "\nsource: " + source + "\n" + levelSchool + "\nCasting Time: " + castingTime +
+                "\nRange: " + range + "\nComponents: " + components + "\nDuration: " + duration + "\n" + description;
+        if(canUpcast) {
+            content += "\nAt Higher Levels. " + upcast;
+        }
+        content += "\nSpellList. " + spellList;
+        return content;
+    }
 }

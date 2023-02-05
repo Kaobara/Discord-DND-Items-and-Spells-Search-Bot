@@ -23,21 +23,17 @@ public class SpellSearch extends ScraperService {
         return super.getContentByID(page, mainContentID).get(0);
     }
 
+    public void createSpell(String spellName) {
 
-    public void searchSpellInfo(String spellName) {
+    }
+
+    public Spell searchSpellInfo(String spellName) {
         String spellNameHref = spellName.toLowerCase().replace(" ", "-");
-//        spellName = spellName.replace(" ", "-");
         String spellURL = WIKIDOT_URL + SPELL_URL_HREF + spellNameHref;
         String spellContent = getMainContent(spellURL);
-//        for(String spellContent : spellContents) {
-//            System.out.println(spellContent);
-//        }
-//        System.out.println(spellContent);
         SpellFactory spellFactory = new SpellFactory();
         spell = spellFactory.createSpell(spellName, spellContent);
-//        this.spell = new Spell(spellName, spellContent);
-//        spell.printNameContent();
-//        spell.sortContents();
-        spell.printContents();
+
+        return spell;
     }
 }
