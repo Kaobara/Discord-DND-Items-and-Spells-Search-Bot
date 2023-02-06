@@ -6,13 +6,18 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 import com.gradle.staticScrapeService.*;
 
+import java.awt.*;
+import java.time.Instant;
+
 public class simpleBot {
     public static void main(String[] args) {
-        DiscordClient client = DiscordClient.create("TOKEN");
+        DiscordClient client = DiscordClient.create("Token");
 
         // Login to Discord and do nothing
 //        Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) -> Mono.empty());
@@ -39,20 +44,39 @@ public class simpleBot {
 //
 //                }));
 
-
+        // Bot responds to message that contains "!Droop cast ", and sends the contents of that spell to the Discord channel
         Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) ->
                 gateway.on(MessageCreateEvent.class, event -> {
                     Message message = event.getMessage();
 
-                    if(message.getContent().contains("!spell ")) {
-                        String spellName = message.getContent().replace("!spell ", "");
+                    if(message.getContent().contains("!Droop cast ")) {
+                        String spellName = message.getContent().replace("!Droop cast ", "");
 
                         SpellSearch spellSearch = new SpellSearch();
                         Spell spell = spellSearch.searchSpellInfo(spellName);
                         String spellContent = spell.getContents();
 
+
+                        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                                .color(Color.GREEN)
+                                .title(spell.getName())
+                                .url(spell.getURL())
+                                .author("Some Name", "https://discord4j.com", "https://i.imgur.com/F9BhEoz.png")
+                                .thumbnail("https://i.imgur.com/F9BhEoz.png")
+                                .addField("Source: ", spell.getSource(), false)
+//                                .addField("\u200B", "\u200B", false)
+                                .addField("", spell.getLevelSchool(), false)
+                                .addField("Casting Time: ", spell.getCastingTime(), false)
+                                .addField("Range: ", spell.getRange(), false)
+                                .addField("Components: ", spell.getComponents(), true)
+                                .addField("Duration: ", spell.getDuration(), true)
+                                .addField("", spell.getDescription(), false)
+                                .timestamp(Instant.now())
+                                .footer("spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
+                                .build();
+
                         return message.getChannel()
-                                .flatMap(channel -> channel.createMessage(spellContent));
+                                .flatMap(channel -> channel.createMessage(embed));
                     }
 
                     return Mono.empty();

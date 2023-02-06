@@ -1,10 +1,12 @@
 package com.gradle.staticScrapeService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import discord4j.core.spec.EmbedCreateFields;
+
+import java.util.Locale;
 
 public class Spell {
     private String name, source, levelSchool, castingTime, range, components, duration, description, upcast, spellList;
+    private String URL;
     private boolean ritual = false, concentration = false, canUpcast = false;
 
     public Spell(String name, String source, String levelSchool, String castingTime,
@@ -37,7 +39,7 @@ public class Spell {
     }
 
     public void printContents() {
-        System.out.println(name);
+        System.out.println(name.toUpperCase(Locale.ROOT));
         System.out.println(source);
         System.out.println(levelSchool);
         System.out.println(castingTime);
@@ -49,6 +51,66 @@ public class Spell {
             System.out.println(upcast);
         }
         System.out.println(spellList);
+    }
+
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getLevelSchool() {
+        return levelSchool;
+    }
+
+    public String getCastingTime() {
+        return castingTime;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public String getComponents() {
+        return components;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getUpcast() {
+        return upcast;
+    }
+
+    public String getSpellList() {
+        return spellList;
+    }
+
+    public boolean isRitual() {
+        return ritual;
+    }
+
+    public boolean isConcentration() {
+        return concentration;
+    }
+
+    public boolean isCanUpcast() {
+        return canUpcast;
     }
 
     public String getContents() {

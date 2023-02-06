@@ -33,6 +33,7 @@ public class SpellSearch extends ScraperService {
         String spellContent = getMainContent(spellURL);
         SpellFactory spellFactory = new SpellFactory();
         spell = spellFactory.createSpell(spellName, spellContent);
+        spell.setURL(spellURL);
 
         return spell;
     }
