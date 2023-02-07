@@ -8,6 +8,11 @@ public class Spell {
     private String name, source, levelSchool, castingTime, range, components, duration, description, upcast, spellList;
     private String URL;
     private boolean ritual = false, concentration = false, canUpcast = false;
+    public boolean isEmpty = false;
+
+    public Spell() {
+        isEmpty = true;
+    }
 
     public Spell(String name, String source, String levelSchool, String castingTime,
                  String range, String components, String duration, String description,
@@ -113,13 +118,4 @@ public class Spell {
         return canUpcast;
     }
 
-    public String getContents() {
-        String content = name + "\nsource: " + source + "\n" + levelSchool + "\nCasting Time: " + castingTime +
-                "\nRange: " + range + "\nComponents: " + components + "\nDuration: " + duration + "\n" + description;
-        if(canUpcast) {
-            content += "\nAt Higher Levels. " + upcast;
-        }
-        content += "\nSpellList. " + spellList;
-        return content;
-    }
 }

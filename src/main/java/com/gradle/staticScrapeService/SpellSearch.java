@@ -1,8 +1,11 @@
 package com.gradle.staticScrapeService;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class SpellSearch extends ScraperService {
     // Need to find some functionality to try and find a specific spell
@@ -28,7 +31,18 @@ public class SpellSearch extends ScraperService {
     }
 
     public Spell searchSpellInfo(String spellName) {
+        spellName = spellName.toLowerCase();
         String spellNameHref = spellName.toLowerCase().replace(" ", "-");
+        spellName = WordUtils.capitalizeFully(spellName);
+        System.out.println(spellName);
+        HtmlPage spellListPage = super.gotoPage("http://dnd5e.wikidot.com/spells");
+        ArrayList<String> allSpells = super.getSpellTables(spellListPage);
+        if(!allSpells.contains(spellName)){
+            return new Spell();
+        }
+        System.out.println("Spell Exists");
+        spellNameHref = spellNameHref.replace("'", "");
+        spellNameHref = spellNameHref.replace(":", "");
         String spellURL = WIKIDOT_URL + SPELL_URL_HREF + spellNameHref;
         String spellContent = getMainContent(spellURL);
         SpellFactory spellFactory = new SpellFactory();

@@ -54,22 +54,29 @@ public class simpleBot {
 
                         SpellSearch spellSearch = new SpellSearch();
                         Spell spell = spellSearch.searchSpellInfo(spellName);
-                        String spellContent = spell.getContents();
+                        if(spell.isEmpty) {
+                            return message.getChannel()
+                                    .flatMap(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
+                        }
 
+                        if(spell.getDescription().length() > 1023) {
+                            return message.getChannel()
+                                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
+                        }
 
+//                        message.getAuthor().getAvatarUrl();
                         EmbedCreateSpec embed = EmbedCreateSpec.builder()
                                 .color(Color.GREEN)
                                 .title(spell.getName())
                                 .url(spell.getURL())
-                                .author("Some Name", "https://discord4j.com", "https://i.imgur.com/F9BhEoz.png")
-                                .thumbnail("https://i.imgur.com/F9BhEoz.png")
+                                .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
                                 .addField("Source: ", spell.getSource(), false)
 //                                .addField("\u200B", "\u200B", false)
                                 .addField("", spell.getLevelSchool(), false)
-                                .addField("Casting Time: ", spell.getCastingTime(), false)
-                                .addField("Range: ", spell.getRange(), false)
-                                .addField("Components: ", spell.getComponents(), true)
-                                .addField("Duration: ", spell.getDuration(), true)
+                                .addField("", "**Casting Time: **" + spell.getCastingTime(), false)
+                                .addField("", "**Range: **" + spell.getRange(), false)
+                                .addField("", "**Components: **" + spell.getComponents(), false)
+                                .addField("", "**Duration: **" + spell.getDuration(), true)
                                 .addField("", spell.getDescription(), false)
                                 .timestamp(Instant.now())
                                 .footer("spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")

@@ -1,5 +1,6 @@
 package com.gradle.staticScrapeService;
 
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import java.io.IOException;
@@ -11,7 +12,9 @@ public class mainDriver {
         ScraperService service = new ScraperService();
 
         SpellSearch spellSearch = new SpellSearch();
-        spellSearch.searchSpellInfo("Call Lightning");
+        spellSearch.searchSpellInfo("Power Word: Stun");
+//        HtmlPage spellListPage = service.gotoPage("http://dnd5e.wikidot.com/spells");
+//        service.getSpellTables(spellListPage);
     }
 
 
