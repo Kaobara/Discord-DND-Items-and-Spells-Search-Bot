@@ -1,5 +1,6 @@
 package com.gradle.discord4jDiscordBot;
 
+import com.gradle.staticScrapeService.Item;
 import com.gradle.staticScrapeService.Spell;
 import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -43,5 +44,24 @@ public class DnDEmbedBuilder {
                     .build();
             return embed;
         }
+    }
+
+    public static EmbedCreateSpec itemEmbed(Item item, Message message) {
+        // Two types of spells: spells that can be upcasted and spells that cannot
+        // TODO: find simpler way to add a new field, or some other else if
+
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .color(Color.GREEN)
+                .title(item.getName())
+                .url(item.getURL())
+                .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
+                .addField("Source: ", item.getSource(), false)
+                .addField("", item.getTypeRarity(), false)
+                .addField("", item.getDescription(), false)
+                .timestamp(Instant.now())
+                .footer("Item", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
+                .build();
+        return embed;
+
     }
 }

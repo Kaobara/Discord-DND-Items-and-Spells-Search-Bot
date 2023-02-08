@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class SpellFactory extends EntityFactory {
 
-    public Spell createSpell(String spellName, ArrayList<String> fullContent) {
+    public Spell createEntity(String spellName, ArrayList<String> fullContent) {
         // Split source, levelSchool, metadata, and spellList into separate categories
         String source = super.extractSource(fullContent);
         String levelSchool = fullContent.remove(TOP_I);

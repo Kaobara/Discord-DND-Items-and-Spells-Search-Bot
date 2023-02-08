@@ -35,4 +35,5 @@ public class Entity {
     public String getDescription() {
         return description;
     }
+
 }

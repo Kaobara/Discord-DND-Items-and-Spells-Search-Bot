@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class simpleBot {
     public static void main(String[] args) {
-        GatewayDiscordClient client = DiscordClientBuilder.create("Token Here")
+        GatewayDiscordClient client = DiscordClientBuilder.create("TOKEN HERE")
                 .build()
                 .login()
                 .block();
@@ -40,6 +40,7 @@ public class simpleBot {
     }
 
     private static SpellSearch spellSearch = new SpellSearch();
+    private static ItemSearch itemSearch = new ItemSearch();
     private static String botUsername;
     private static DnDEmbedBuilder embedBuilder = new DnDEmbedBuilder();
     private static String currentBotCommand;
@@ -49,7 +50,10 @@ public class simpleBot {
         if(message.getContent().contains("!" + botUsername + " cast ")) {
             currentBotCommand = "!" + botUsername + " cast ";
             return spellSearchUp(message);
-        } else {
+        } else if(message.getContent().contains("!" + botUsername + " find ")) {
+            currentBotCommand = "!" + botUsername + " find ";
+            return itemSearchUp(message);
+        }else {
             return Mono.empty();
         }
     }
@@ -59,7 +63,7 @@ public class simpleBot {
         String spellName = message.getContent().replace(currentBotCommand, "");
 
         // Search spell from its name
-        Spell spell = spellSearch.searchSpellInfo(spellName);
+        Spell spell = (Spell) spellSearch.searchEntityInfo(spellName);
 
         // If empty, spell not found from list
         if(spell.isEmpty) {
@@ -75,6 +79,32 @@ public class simpleBot {
 
         // Create the embed of spell and return it
         EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
+
+        return message.getChannel()
+                .flatMap(channel -> channel.createMessage(embed));
+    }
+
+    private static Mono<Object> itemSearchUp(Message message) {
+        // Name of Item taken from message
+        String itemName = message.getContent().replace(currentBotCommand, "");
+
+        // Search spell from its name
+        Item item = (Item) itemSearch.searchEntityInfo(itemName);
+
+        // If empty, spell not found from list
+        if(item.isEmpty) {
+            return message.getChannel()
+                    .flatMap(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
+        }
+
+        // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
+        if(item.getDescription().length() > 1023) {
+            return message.getChannel()
+                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + item.getURL()));
+        }
+
+        // Create the embed of spell and return it
+        EmbedCreateSpec embed = embedBuilder.itemEmbed(item, message);
 
         return message.getChannel()
                 .flatMap(channel -> channel.createMessage(embed));

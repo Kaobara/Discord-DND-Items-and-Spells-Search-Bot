@@ -2,11 +2,13 @@ package com.gradle.staticScrapeService;
 
 import java.util.ArrayList;
 
-public class EntityFactory {
+public abstract class EntityFactory {
     final protected int TOP_I = 0;
     final protected int BOTTOM_I = -1;
 
     protected String entityListName;
+
+    public abstract Entity createEntity(String entityName, ArrayList<String> fullContent);
 
     public String extractSource(ArrayList<String> fullContent) {
         // Split source, levelSchool, metadata, and spellList into separate categories
