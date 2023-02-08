@@ -53,10 +53,30 @@ public class ScraperService {
 //        textContents.add(element.getTextContent());
         DomNodeList<DomNode> nodes = element.querySelectorAll("p, li");
         for(DomNode node : nodes) {
-            if(node.getNodeName().contains("li")) {textContents.add("- " + node.getTextContent()); continue;}
-            textContents.add(node.getTextContent());
+//            System.out.println(node.asXml());
+            String paragraphContent = "";
+            for(DomNode childNode : node.getChildNodes()) {
+                if(childNode.getNodeName().equalsIgnoreCase("br")){
+                    continue;
+                }
+
+                String formattedText = formatParagraphNodes(childNode.getTextContent(), childNode);
+
+                paragraphContent += formattedText;
+            }
+            if(node.getNodeName().contains("li")) { paragraphContent = "- " + paragraphContent; }
+            textContents.add(paragraphContent);
         }
         return textContents;
+    }
+
+    public String formatParagraphNodes(String formattedText, DomNode node) {
+        if(node.getNodeName().contains("em")) {
+            formattedText = "_" + formattedText + "_";
+        } else if(node.getNodeName().contains("strong")) {
+            formattedText = "**" + formattedText + "**";
+        }
+        return formattedText;
     }
 
     public void getAllLinks(HtmlPage page) {

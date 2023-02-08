@@ -4,15 +4,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
-public class SpellSearch extends ScraperService {
+public class ItemSearch extends ScraperService {
     // Need to find some functionality to try and find a specific spell
     // It take a string
     // and outputs the text
@@ -25,7 +23,7 @@ public class SpellSearch extends ScraperService {
 
     private Spell spell;
 
-    public SpellSearch() {
+    public ItemSearch() {
         HtmlPage spellListPage = super.gotoPage(SPELL_LIST_URL);
         spellList = getSpellTables(spellListPage);
     }
