@@ -24,8 +24,8 @@ public class SpellFactory {
         if(fullContent.get(fullContent.size() + BOTTOM_I).contains("At Higher Levels. ")) {
             upcast = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("At Higher Levels. ", "");
         }
-        System.out.println(upcast);
 
+        // Combine the description into a single string
         String description = "";
         for(String content : fullContent) {
             if(description.isEmpty()) {

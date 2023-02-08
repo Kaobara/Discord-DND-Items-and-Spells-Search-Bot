@@ -1,10 +1,15 @@
 package com.gradle.staticScrapeService;
 
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class SpellSearch extends ScraperService {
@@ -13,12 +18,15 @@ public class SpellSearch extends ScraperService {
     // and outputs the text
 
     private final String SPELL_URL_HREF = "/spell:";
-    private final String WIKIDOT_URL = "http://dnd5e.wikidot.com";
     private final String mainContentID = "page-content";
+
+    private static ArrayList<String> spellList;
 
     private Spell spell;
 
     public SpellSearch() {
+        HtmlPage spellListPage = super.gotoPage("http://dnd5e.wikidot.com/spells");
+        spellList = getSpellTables(spellListPage);
     }
 
     public ArrayList<String> getMainContent(String URL) {
@@ -26,21 +34,13 @@ public class SpellSearch extends ScraperService {
         return super.getContentByID(page, mainContentID);
     }
 
-    public void createSpell(String spellName) {
-
-    }
-
     public Spell searchSpellInfo(String spellName) {
         spellName = spellName.toLowerCase();
         String spellNameHref = spellName.toLowerCase().replace(" ", "-");
         spellName = WordUtils.capitalizeFully(spellName);
-        System.out.println(spellName);
-        HtmlPage spellListPage = super.gotoPage("http://dnd5e.wikidot.com/spells");
-        ArrayList<String> allSpells = super.getSpellTables(spellListPage);
-        if(!allSpells.contains(spellName)){
+        if(!spellList.contains(spellName)){
             return new Spell();
         }
-        System.out.println("Spell Exists");
         spellNameHref = spellNameHref.replace("'", "");
         spellNameHref = spellNameHref.replace(":", "");
         String spellURL = WIKIDOT_URL + SPELL_URL_HREF + spellNameHref;
@@ -50,5 +50,24 @@ public class SpellSearch extends ScraperService {
         spell.setURL(spellURL);
 
         return spell;
+    }
+
+    public ArrayList<String> getSpellTables(HtmlPage page) {
+        HtmlDivision magicItems = page.getFirstByXPath("//div[@class='yui-navset']");
+        List<HtmlTable> magicTables = magicItems.getByXPath("//table[@class='wiki-content-table']");
+
+        ArrayList<String> spellListString = new ArrayList<>();
+
+        for(HtmlTable magicTable : magicTables) {
+            for (final HtmlTableRow row : magicTable.getRows()) {
+                if(row.getCell(0).getTextContent().compareTo("Spell Name") != 0) {
+                    spellListString.add(row.getCell(0).getTextContent());
+                }
+            }
+
+        }
+
+        Collections.sort(spellListString);
+        return  spellListString;
     }
 }

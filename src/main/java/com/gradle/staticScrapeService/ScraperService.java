@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ScraperService {
-
+    protected final String WIKIDOT_URL = "http://dnd5e.wikidot.com";
 
     private static WebClient createWebClient() {
         WebClient webClient = new WebClient(BrowserVersion.CHROME);
@@ -71,24 +71,7 @@ public class ScraperService {
     }
 
 
-    public static ArrayList<String> getSpellTables(HtmlPage page) {
-        HtmlDivision magicItems = page.getFirstByXPath("//div[@class='yui-navset']");
-        List<HtmlTable>  magicTables = magicItems.getByXPath("//table[@class='wiki-content-table']");
 
-        ArrayList<String> spellListString = new ArrayList<>();
-
-        for(HtmlTable magicTable : magicTables) {
-            for (final HtmlTableRow row : magicTable.getRows()) {
-                if(row.getCell(0).getTextContent().compareTo("Spell Name") != 0) {
-                    spellListString.add(row.getCell(0).getTextContent());
-                }
-            }
-
-        }
-
-        Collections.sort(spellListString);
-        return  spellListString;
-    }
 }
 
 

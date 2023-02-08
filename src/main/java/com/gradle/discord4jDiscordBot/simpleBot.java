@@ -1,6 +1,6 @@
 package com.gradle.discord4jDiscordBot;
 
-import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -12,81 +12,72 @@ import reactor.core.publisher.Mono;
 
 import com.gradle.staticScrapeService.*;
 
-import java.awt.*;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class simpleBot {
     public static void main(String[] args) {
-        DiscordClient client = DiscordClient.create("Token");
+        GatewayDiscordClient client = DiscordClientBuilder.create("TOKEN HERE")
+                .build()
+                .login()
+                .block();
 
-        // Bot responds to message that contains "!Droop cast ", and sends the contents of that spell to the Discord channel
-        Mono<Void> login = client.withGateway((GatewayDiscordClient gateway) ->
-                gateway.on(MessageCreateEvent.class, event -> {
-                    Message message = event.getMessage();
+        client.getEventDispatcher().on(ReadyEvent.class)
+                .subscribe(event -> {
+                    User self = event.getSelf();
+                    botUsername = self.getUsername();
+                    System.out.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
+                    System.out.println(self);
+                });
 
-                    // Spell Searching
-                    if(message.getContent().contains("!Droop cast ")) { return spellSearchUp(message) ;
-                    }
+        client.getEventDispatcher().on(MessageCreateEvent.class)
+                .map(event -> event.getMessage())
+                .filter(message -> message.getContent().contains("!" + botUsername ))
+                .flatMap(simpleBot::botCommands)
+                .subscribe();
 
-                    return Mono.empty();
+        client.onDisconnect().block();
+    }
 
-                }));
+    private static SpellSearch spellSearch = new SpellSearch();
+    private static String botUsername;
+    private static DnDEmbedBuilder embedBuilder = new DnDEmbedBuilder();
 
-        login.block();
+    // List of all bot commands that can be done
+    private static Mono<Object> botCommands(Message message) {
+        if(message.getContent().contains("cast")) {
+            return spellSearchUp(message);
+        } else {
+            return Mono.empty();
+        }
     }
 
     private static Mono<Object> spellSearchUp(Message message) {
-        String spellName = message.getContent().replace("!Droop cast ", "");
+        // Name of Spell taken from message
+        String spellName = message.getContent().replace("!" + botUsername +  " cast ", "");
 
-        SpellSearch spellSearch = new SpellSearch();
+        // Search spell from its name
         Spell spell = spellSearch.searchSpellInfo(spellName);
+
+        // If empty, spell not found from list
         if(spell.isEmpty) {
             return message.getChannel()
                     .flatMap(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
         }
 
+        // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
         if(spell.getDescription().length() > 1023) {
             return message.getChannel()
                     .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
         }
 
-        EmbedCreateSpec embed = spellEmbed(spell, message);
+        // Create the embed of spell and return it
+        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
 
         return message.getChannel()
                 .flatMap(channel -> channel.createMessage(embed));
-
     }
 
-    private static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
-        if(!spell.canUpcast()) {
-            EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                    .color(Color.GREEN)
-                    .title(spell.getName())
-                    .url(spell.getURL())
-                    .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
-                    .addField("Source: ", spell.getSource(), false)
-                    .addField("", spell.getLevelSchool(), false)
-                    .addField("", spell.getMetadata(), false)
-                    .addField("", spell.getDescription(), false)
-                    .timestamp(Instant.now())
-                    .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
-                    .build();
-            return embed;
-        } else {
-            EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                    .color(Color.GREEN)
-                    .title(spell.getName())
-                    .url(spell.getURL())
-                    .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
-                    .addField("Source: ", spell.getSource(), false)
-                    .addField("", spell.getLevelSchool(), false)
-                    .addField("", spell.getMetadata(), false)
-                    .addField("", spell.getDescription(), false)
-                    .addField("At Higher Levels", spell.getUpcast(), false)
-                    .timestamp(Instant.now())
-                    .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
-                    .build();
-            return embed;
-        }
-    }
+
+
 }
