@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class simpleBot {
     public static void main(String[] args) {
-        GatewayDiscordClient client = DiscordClientBuilder.create("OTM1NzgwODI4MzY0MDI5OTky.GltlmB.micSl_QqIic0DAPNEnCvHA_ZPrrlhv9yiF2vRY")
+        GatewayDiscordClient client = DiscordClientBuilder.create("Token Here")
                 .build()
                 .login()
                 .block();
