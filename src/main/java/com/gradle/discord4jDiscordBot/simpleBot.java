@@ -32,7 +32,7 @@ public class simpleBot {
 
         client.getEventDispatcher().on(MessageCreateEvent.class)
                 .map(event -> event.getMessage())
-                .filter(message -> message.getContent().contains("!" + botUsername ))
+                .filter(message -> message.getContent().startsWith("!" + botUsername ))
                 .flatMap(simpleBot::botCommands)
                 .subscribe();
 
@@ -42,10 +42,12 @@ public class simpleBot {
     private static SpellSearch spellSearch = new SpellSearch();
     private static String botUsername;
     private static DnDEmbedBuilder embedBuilder = new DnDEmbedBuilder();
+    private static String currentBotCommand;
 
     // List of all bot commands that can be done
     private static Mono<Object> botCommands(Message message) {
-        if(message.getContent().contains("cast")) {
+        if(message.getContent().contains("!" + botUsername + " cast ")) {
+            currentBotCommand = "!" + botUsername + " cast ";
             return spellSearchUp(message);
         } else {
             return Mono.empty();
@@ -54,7 +56,7 @@ public class simpleBot {
 
     private static Mono<Object> spellSearchUp(Message message) {
         // Name of Spell taken from message
-        String spellName = message.getContent().replace("!" + botUsername +  " cast ", "");
+        String spellName = message.getContent().replace(currentBotCommand, "");
 
         // Search spell from its name
         Spell spell = spellSearch.searchSpellInfo(spellName);
