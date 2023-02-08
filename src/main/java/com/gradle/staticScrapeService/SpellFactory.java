@@ -4,13 +4,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SpellFactory {
-    final private int TOP_I = 0;
-    final private int BOTTOM_I = -1;
+public class SpellFactory extends EntityFactory {
 
     public Spell createSpell(String spellName, ArrayList<String> fullContent) {
         // Split source, levelSchool, metadata, and spellList into separate categories
-        String source = fullContent.remove(TOP_I).replaceFirst("Source: ", "");
+        String source = super.extractSource(fullContent);
         String levelSchool = fullContent.remove(TOP_I);
         String metaData = fullContent.remove(TOP_I);
         String spellList = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("..Spell Lists\\...", "");
@@ -22,15 +20,7 @@ public class SpellFactory {
         }
 
         // Combine the description into a single string
-        String description = "";
-        for(String content : fullContent) {
-            if(description.isEmpty()) {
-                description = content;
-            } else {
-                if(content.startsWith("-")) { description += "\n" + content;}
-                else {description += "\n\n" + content;}
-            }
-        }
+        String description = super.getDescription(fullContent);
 
         return new Spell(spellName, source, levelSchool, metaData, description, upcast, spellList);
     }

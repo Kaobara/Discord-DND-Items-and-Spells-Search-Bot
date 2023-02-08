@@ -15,13 +15,13 @@ public class ItemSearch extends ScraperService {
     // It take a string
     // and outputs the text
 
-    private final String SPELL_URL_HREF = "/spell:";
+    private final String ITEM_URL_HREF = "/wondrous-item:";
     private final String mainContentID = "page-content";
-    private final String SPELL_LIST_URL = "http://dnd5e.wikidot.com/spells";
+    private final String SPELL_LIST_URL = "http://dnd5e.wikidot.com/wondrous-items";
 
     private static ArrayList<String> spellList;
 
-    private Spell spell;
+    private Item item;
 
     public ItemSearch() {
         HtmlPage spellListPage = super.gotoPage(SPELL_LIST_URL);
@@ -33,22 +33,22 @@ public class ItemSearch extends ScraperService {
         return super.getContentByID(page, mainContentID);
     }
 
-    public Spell searchSpellInfo(String spellName) {
-        spellName = spellName.toLowerCase();
-        String spellNameHref = spellName.toLowerCase().replace(" ", "-");
-        spellName = WordUtils.capitalizeFully(spellName);
-        if(!spellList.contains(spellName)){
-            return new Spell();
-        }
-        spellNameHref = spellNameHref.replace("'", "");
-        spellNameHref = spellNameHref.replace(":", "");
-        String spellURL = WIKIDOT_URL + SPELL_URL_HREF + spellNameHref;
-        ArrayList<String> spellContent = getMainContent(spellURL);
-        SpellFactory spellFactory = new SpellFactory();
-        spell = spellFactory.createSpell(spellName, spellContent);
-        spell.setURL(spellURL);
+    public Item searchItemInfo(String ItemName) {
+//        ItemName = ItemName.toLowerCase();
+//        String itemNameHref = ItemName.toLowerCase().replace(" ", "-");
+//        ItemName = WordUtils.capitalizeFully(ItemName);
+//        if(!spellList.contains(ItemName)){
+//            return new Item();
+//        }
+//        itemNameHref = itemNameHref.replace("'", "");
+//        itemNameHref = itemNameHref.replace(":", "");
+//        String spellURL = WIKIDOT_URL + ITEM_URL_HREF + itemNameHref;
+//        ArrayList<String> spellContent = getMainContent(spellURL);
+//        SpellFactory spellFactory = new SpellFactory();
+//        item = itemFactory.createItem(ItemName, spellContent);
+//        spell.setURL(spellURL);
 
-        return spell;
+        return new Item();
     }
 
     public ArrayList<String> getSpellTables(HtmlPage page) {
