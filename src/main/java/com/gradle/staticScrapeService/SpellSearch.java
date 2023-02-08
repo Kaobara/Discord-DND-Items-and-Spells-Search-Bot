@@ -21,9 +21,9 @@ public class SpellSearch extends ScraperService {
     public SpellSearch() {
     }
 
-    public String getMainContent(String URL) {
+    public ArrayList<String> getMainContent(String URL) {
         HtmlPage page = super.gotoPage(URL);
-        return super.getContentByID(page, mainContentID).get(0);
+        return super.getContentByID(page, mainContentID);
     }
 
     public void createSpell(String spellName) {
@@ -44,7 +44,7 @@ public class SpellSearch extends ScraperService {
         spellNameHref = spellNameHref.replace("'", "");
         spellNameHref = spellNameHref.replace(":", "");
         String spellURL = WIKIDOT_URL + SPELL_URL_HREF + spellNameHref;
-        String spellContent = getMainContent(spellURL);
+        ArrayList<String> spellContent = getMainContent(spellURL);
         SpellFactory spellFactory = new SpellFactory();
         spell = spellFactory.createSpell(spellName, spellContent);
         spell.setURL(spellURL);

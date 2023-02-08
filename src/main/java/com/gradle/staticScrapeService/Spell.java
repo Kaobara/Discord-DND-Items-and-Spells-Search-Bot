@@ -5,13 +5,32 @@ import discord4j.core.spec.EmbedCreateFields;
 import java.util.Locale;
 
 public class Spell {
-    private String name, source, levelSchool, castingTime, range, components, duration, description, upcast, spellList;
+    private String name, source, levelSchool, metadata, castingTime, range, components, duration, description, upcast, spellList;
     private String URL;
-    private boolean ritual = false, concentration = false, canUpcast = false;
+    private boolean ritual = false, concentration = false, canUpcastBool = false;
     public boolean isEmpty = false;
 
     public Spell() {
         isEmpty = true;
+    }
+
+    public Spell(String name, String source, String levelSchool, String metadata, String description, String upcast, String spellList) {
+        this.name = name;
+        this.source = source;
+        this.levelSchool = levelSchool;
+
+        this.metadata = metadata;
+
+        this.description = description;
+
+        this.upcast = upcast;
+        if(!this.upcast.isEmpty()) {
+            System.out.println("====");
+            System.out.println(upcast);
+            System.out.println("====");
+            canUpcastBool = true;
+        }
+        this.spellList = spellList;
     }
 
     public Spell(String name, String source, String levelSchool, String castingTime,
@@ -38,7 +57,7 @@ public class Spell {
 
         this.upcast = upcast;
         if(!this.upcast.isEmpty()) {
-            canUpcast = true;
+            canUpcastBool = true;
         }
         this.spellList = spellList;
     }
@@ -52,7 +71,7 @@ public class Spell {
         System.out.println(components);
         System.out.println(duration);
         System.out.println(description);
-        if(canUpcast){
+        if(canUpcastBool){
             System.out.println(upcast);
         }
         System.out.println(spellList);
@@ -61,6 +80,8 @@ public class Spell {
     public void setURL(String URL) {
         this.URL = URL;
     }
+
+    public String getMetadata() { return  metadata; }
 
     public String getURL() {
         return URL;
@@ -114,8 +135,8 @@ public class Spell {
         return concentration;
     }
 
-    public boolean isCanUpcast() {
-        return canUpcast;
+    public boolean canUpcast() {
+        return canUpcastBool;
     }
 
 }

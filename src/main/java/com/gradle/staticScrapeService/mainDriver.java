@@ -12,7 +12,7 @@ public class mainDriver {
         ScraperService service = new ScraperService();
 
         SpellSearch spellSearch = new SpellSearch();
-        spellSearch.searchSpellInfo("Power Word: Stun");
+        spellSearch.searchSpellInfo("fireball");
 //        HtmlPage spellListPage = service.gotoPage("http://dnd5e.wikidot.com/spells");
 //        service.getSpellTables(spellListPage);
     }

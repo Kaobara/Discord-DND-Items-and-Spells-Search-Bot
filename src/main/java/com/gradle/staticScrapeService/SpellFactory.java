@@ -1,5 +1,6 @@
 package com.gradle.staticScrapeService;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,60 +12,55 @@ public class SpellFactory {
 
     private ArrayList<String> contentList;
 
-    public Spell createSpell(String spellName, String fullContent) {
-        contentList = sortContents(fullContent);
+    public Spell createSpell(String spellName, ArrayList<String> fullContent) {
+        // Split source, levelSchool, metadata, and spellList into separate categories
+        String source = fullContent.remove(TOP_I).replaceFirst("Source: ", "");
+        String levelSchool = "_" + fullContent.remove(TOP_I) + "_";
+        String metaData = formatMetaData(fullContent.remove(TOP_I));
+        String spellList = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("Spell Lists. ", "");
 
-        String source = content(TOP_I, "Source: ");
-        String levelSchool = content(TOP_I, "");
-        String castingTime = content(TOP_I, "Casting Time: ");
-        String range = content(TOP_I, "Range: ");
-        String components = content(TOP_I, "Components: ");
-        String duration = content(TOP_I, "Duration: ");
-
-        String spellList = content(contentList.size() + BOTTOM_I, "Spell Lists. ");
-
+        // If the spell can be upcast, place it into its own category as well
         String upcast = "";
-        if(contentList.get(contentList.size() + BOTTOM_I).contains("At Higher Levels. ")) {
-            upcast = content(contentList.size() + BOTTOM_I, "At Higher Levels. ");
+        if(fullContent.get(fullContent.size() + BOTTOM_I).contains("At Higher Levels. ")) {
+            upcast = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("At Higher Levels. ", "");
         }
+        System.out.println(upcast);
 
         String description = "";
-        for(String content : contentList) {
+        for(String content : fullContent) {
             if(description.isEmpty()) {
                 description = content;
             } else {
-                description += "\n" + content;
+                if(content.startsWith("-")) { description += "\n" + content;}
+                else {description += "\n\n" + content;}
             }
         }
 
-
-        Spell spell = new Spell(spellName, source, levelSchool, castingTime, range, components, duration,
-                description, upcast, spellList);
-        return spell;
-
+        return new Spell(spellName, source, levelSchool, metaData, description, upcast, spellList);
     }
 
-    // Split the contents into an array list, per line
-    public ArrayList<String> sortContents(String fullContent) {
-        String[] strSplit = fullContent.split("\n");
+    public String formatMetaData(String metaData) {
+        // We want to bold the metadata type names for each line
+        // this is done by adding "**" to the start and to the end of the metadata type names (e.g. "**Duration:**)
 
-        ArrayList<String> contentList = new ArrayList<>(
-                Arrays.asList(strSplit)
-        );
+        // Regex - split after a ":", but include the delimiter
+        String regexDelimiter = "(?<=:)";
 
-        contentList.removeAll(Arrays.asList("", null));
-        return contentList;
-    }
+        // Split the entire metadata into its own lines
+        String[] tempDataArr = metaData.split("\n");
+        String finalMetaData = "";
 
-    private String content(int contentIndex, String stringRemoval) {
-        String content;
-        if(stringRemoval != "") {
-            content = contentList.get(contentIndex).replaceFirst(stringRemoval, "");
-        } else {
-            content = contentList.get(contentIndex);
+        for(String metaDataLine : tempDataArr) {
+            // Add the first set of **
+            metaDataLine = "**"+metaDataLine;
+
+            // Add second set of ** after the metadata type names
+            String[] tempDataLineArr = metaDataLine.split(regexDelimiter, 2);
+            metaDataLine = metaDataLine.replace(tempDataLineArr[0], tempDataLineArr[0]+"**");
+            finalMetaData += metaDataLine + "\n";
         }
-        contentList.remove(contentIndex);
-        return content;
+        return finalMetaData;
+
     }
 
 }
