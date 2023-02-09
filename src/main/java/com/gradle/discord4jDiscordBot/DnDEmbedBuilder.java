@@ -12,36 +12,21 @@ public class DnDEmbedBuilder {
     public static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
         // Two types of spells: spells that can be upcasted and spells that cannot
         // TODO: find simpler way to add a new field, or some other else if
-        if(!spell.canUpcast()) {
-            EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                    .color(Color.GREEN)
-                    .title(spell.getName())
-                    .url(spell.getURL())
-                    .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
-                    .addField("Source: ", spell.getSource(), false)
-                    .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
-                    .addField("", spell.getMetadata(), false)
-                    .addField("", spell.getDescription(), false)
-                    .timestamp(Instant.now())
-                    .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
-                    .build();
-            return embed;
-        } else {
-            EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                    .color(Color.GREEN)
-                    .title(spell.getName())
-                    .url(spell.getURL())
-                    .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
-                    .addField("Source: ", spell.getSource(), false)
-                    .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + ")_", false)
-                    .addField("", spell.getMetadata(), false)
-                    .addField("", spell.getDescription(), false)
-                    .addField("At Higher Levels", spell.getUpcast(), false)
-                    .timestamp(Instant.now())
-                    .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
-                    .build();
-            return embed;
-        }
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .color(Color.GREEN)
+                .title(spell.getName())
+                .url(spell.getURL())
+                .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
+                .addField("Source: ", spell.getSource(), false)
+                .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
+                .addField("", spell.getMetadata(), false)
+                .addField("", spell.getDescription(), false)
+                .addField(spell.getUpcastTitle(), spell.getUpcast(), false)
+                .timestamp(Instant.now())
+                .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
+                .build();
+        return embed;
+
     }
 
     public static EmbedCreateSpec itemEmbed(Item item, Message message) {
@@ -60,6 +45,14 @@ public class DnDEmbedBuilder {
                 .footer("Item", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
                 .build();
         return embed;
+    }
 
+    public static EmbedCreateSpec continuedDescEmbed(String continuedDescription, Message message) {
+        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                .color(Color.GREEN)
+                .addField("", continuedDescription, false)
+                .timestamp(Instant.now())
+                .build();
+        return embed;
     }
 }

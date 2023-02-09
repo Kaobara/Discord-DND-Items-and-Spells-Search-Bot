@@ -1,9 +1,11 @@
 package com.gradle.staticScrapeService;
 
+import java.util.ArrayList;
+
 public class Entity {
     private String name, source, description;
     private String URL;
-    public boolean isEmpty = false;
+    public boolean isEmpty = false, hasLongDescription = false;
 
     public Entity() {
         isEmpty = true;
@@ -35,5 +37,7 @@ public class Entity {
     public String getDescription() {
         return description;
     }
+
+//    public ArrayList<String> splitDescription() {}
 
 }

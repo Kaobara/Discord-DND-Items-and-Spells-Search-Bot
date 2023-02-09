@@ -5,7 +5,7 @@ import discord4j.core.spec.EmbedCreateFields;
 import java.util.Locale;
 
 public class Spell extends Entity {
-    private String levelSchool, metadata, upcast, spellList;
+    private String levelSchool, metadata, spellList, upcast = "";
     private boolean ritual = false, concentration = false, canUpcastBool = false;
 
     public Spell() {
@@ -23,6 +23,14 @@ public class Spell extends Entity {
         if(metadata.contains("concentration")) { ritual = true; }
 
         this.spellList = spellList;
+    }
+
+    public String getUpcastTitle() {
+        if(canUpcast()) {
+            return "At Higher Levels";
+        } else {
+            return "";
+        }
     }
 
     public String getMetadata() { return  metadata; }

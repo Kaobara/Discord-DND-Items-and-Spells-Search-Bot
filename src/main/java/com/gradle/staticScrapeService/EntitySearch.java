@@ -73,7 +73,7 @@ public class EntitySearch {
                 String formattedText = formatParagraphNodes(childNode.getTextContent(), childNode);
                 paragraphContent += formattedText;
             }
-            if(node.getNodeName().contains("li")) { paragraphContent = "- " + paragraphContent; }
+            if(node.getNodeName().contains("li")) { paragraphContent = "   - " + paragraphContent; }
             textContents.add(paragraphContent);
         }
         return textContents;

@@ -6,14 +6,15 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.rest.util.Color;
+import discord4j.core.spec.MessageCreateMono;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import com.gradle.staticScrapeService.*;
 
-import java.time.Instant;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
 
 public class simpleBot {
     public static void main(String[] args) {
@@ -78,9 +79,12 @@ public class simpleBot {
 //                    channel.createMes));
 //            thing + thing2;
             return message.getChannel()
-                    .flatMap(channel -> Mono.when(channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()),
-                                                  channel.createMessage("Noob")));
+//                    .flatMap(channel -> Mono.when(channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()),
+//                                                  channel.createMessage("Noob")));
 //                    .flatMap(channel -> channel.createMessage("Boon"));
+                    .flatMap(channel -> {
+                        return Mono.when(channel.createMessage("darn"));
+                    });
         }
 
         // Create the embed of spell and return it
@@ -89,6 +93,28 @@ public class simpleBot {
         return message.getChannel()
                 .flatMap(channel -> channel.createMessage(embed));
     }
+//    void when(Publisher<MessageCreateMono>... sources, MessageChannel channel){
+//
+//    }
+
+    private static MessageCreateMono[] gm(MessageChannel channel) {
+        MessageCreateMono[] hm = new MessageCreateMono[3];
+//        ArrayList<MessageCreateMono> hm = new ArrayList<>();
+        for(int i = 0; i<2; i++) {
+//            hm.add(channel.createMessage(String.valueOf(i)));
+            hm[i] = channel.createMessage(String.valueOf(i));
+        }
+        return hm;
+//        return Mono.when(damn -> hm.get(0), hm.get(1));
+//        return channel.createMessage("AAAAAA");
+
+    }
+
+//    private static Mono<Object> hm(Message message) {
+//        message.getChannel()
+//                .flatMap(channel -> Mono.when(channel.createMessage()))
+////        return Mono.when(channel.create)
+//    }
 
     private static Mono<Object> itemSearchUp(Message message) {
         // Name of Item taken from message
