@@ -88,7 +88,8 @@ public class EntitySearch {
         for(HtmlTable magicTable : magicTables) {
             for (final HtmlTableRow row : magicTable.getRows()) {
                 if(row.getCell(0).getTextContent().compareTo(entityType + " Name") != 0) {
-                    spellEntityString.add(row.getCell(0).getTextContent());
+                    spellEntityString.add(WordUtils.capitalizeFully(row.getCell(0).getTextContent()));
+//                    spellEntityString.add(.capitalize);
                 }
             }
 

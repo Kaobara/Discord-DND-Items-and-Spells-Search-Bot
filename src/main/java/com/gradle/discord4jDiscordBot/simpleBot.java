@@ -67,7 +67,7 @@ public class simpleBot {
         Spell spell = (Spell) spellSearch.searchEntityInfo(spellName);
 
         // If empty, spell not found from list
-        if(spell.isEmpty) {
+        if(spell.isEmpty()) {
             return message.getChannel()
                     .flatMap(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
         }
@@ -124,16 +124,16 @@ public class simpleBot {
         Item item = (Item) itemSearch.searchEntityInfo(itemName);
 
         // If empty, spell not found from list
-        if(item.isEmpty) {
+        if(item.isEmpty()) {
             return message.getChannel()
                     .flatMap(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
         }
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
-        if(item.getDescription().length() > 1023) {
-            return message.getChannel()
-                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + item.getURL()));
-        }
+//        if(item.getDescription().length() > 1023) {
+//            return message.getChannel()
+//                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + item.getURL()));
+//        }
 
         // Create the embed of spell and return it
         EmbedCreateSpec embed = embedBuilder.itemEmbed(item, message);
