@@ -9,7 +9,8 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateMono;
-import org.reactivestreams.Publisher;
+import discord4j.discordjson.json.gateway.MessageCreate;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import com.gradle.staticScrapeService.*;
@@ -47,19 +48,19 @@ public class simpleBot {
     private static String currentBotCommand;
 
     // List of all bot commands that can be done
-    private static Mono<Object> botCommands(Message message) {
+    private static Flux<?> botCommands(Message message) {
         if(message.getContent().contains("!" + botUsername + " cast ")) {
             currentBotCommand = "!" + botUsername + " cast ";
             return spellSearchUp(message);
         } else if(message.getContent().contains("!" + botUsername + " find ")) {
             currentBotCommand = "!" + botUsername + " find ";
-            return itemSearchUp(message);
+            return Flux.from(itemSearchUp(message));
         }else {
-            return Mono.empty();
+            return Flux.empty();
         }
     }
 
-    private static Mono<Object> spellSearchUp(Message message) {
+    private static Flux<Object> spellSearchUp(Message message) {
         // Name of Spell taken from message
         String spellName = message.getContent().replace(currentBotCommand, "");
 
@@ -69,52 +70,63 @@ public class simpleBot {
         // If empty, spell not found from list
         if(spell.isEmpty()) {
             return message.getChannel()
-                    .flatMap(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
+                    .flatMapMany(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
+//                        channel.createMessage("Spell not found. Please check if you spelled it correctly"));
         }
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
-        if(spell.getDescription().length() > 1023) {
-//            Mono<Object> thing = message.getChannel().flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
-//            Mono<Object> thing2 = message.getChannel().flatMap(channel -> Mono.when(channel.createMessage("noob"),
-//                    channel.createMes));
-//            thing + thing2;
+//        if(spell.getDescription().length() < 1023) {
+
+        ArrayList<EmbedCreateSpec> embeds= new ArrayList<>();
+//        EmbedCreateSpec embed1 = embedBuilder.spellEmbed(spell, message);
+//        EmbedCreateSpec embed2 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
+//        EmbedCreateSpec embed3 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
+//        embeds.add(.createMessage(embed1));
+//        embeds.add(channel.createMessage(embed2));
+//        embeds.add(channel.createMessage(embed3));
+        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
             return message.getChannel()
-//                    .flatMap(channel -> Mono.when(channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()),
-//                                                  channel.createMessage("Noob")));
-//                    .flatMap(channel -> channel.createMessage("Boon"));
-                    .flatMap(channel -> {
-                        return Mono.when(channel.createMessage("darn"));
-                    });
-        }
+                    .flatMapMany(channel -> {
+                        ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
+                        EmbedCreateSpec embed1 = embedBuilder.spellEmbed(spell, message);
+                        EmbedCreateSpec embed2 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
+                        EmbedCreateSpec embed3 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
+                        messageCreateMonos.add(channel.createMessage(embed1));
+                        messageCreateMonos.add(channel.createMessage(embed2));
+                        messageCreateMonos.add(channel.createMessage(embed3));
+
+                        return Flux.fromIterable(messageCreateMonos);
+//                        return Flux.from(channel.createMessage(embed1));
+                    }).flatMap(death -> Flux.from(death));
+//                    .flatMapMany(channel -> {
+//                        return Flux.fromIterable(embeds);
+//                        return Flux.from(channel.createMessage(embed));
+//                    });
+
+//                    thingy.subscribe();
+//
+//                    .flatMapMany(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
+//        }
 
         // Create the embed of spell and return it
-        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
-
-        return message.getChannel()
-                .flatMap(channel -> channel.createMessage(embed));
+//        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
+//
+//        return message.getChannel()
+//                .flatMapMany(channel -> channel.createMessage(embed));
     }
-//    void when(Publisher<MessageCreateMono>... sources, MessageChannel channel){
+
+//    private static MessageCreateMono[] gm(MessageChannel channel) {
+//        MessageCreateMono[] hm = new MessageCreateMono[3];
+//        for(int i = 0; i<2; i++) {
+//            hm[i] = channel.createMessage(String.valueOf(i));
+//        }
+//        return hm;
+////        return Mono.when(damn -> hm.get(0), hm.get(1));
+////        return channel.createMessage("AAAAAA");
 //
 //    }
 
-    private static MessageCreateMono[] gm(MessageChannel channel) {
-        MessageCreateMono[] hm = new MessageCreateMono[3];
-//        ArrayList<MessageCreateMono> hm = new ArrayList<>();
-        for(int i = 0; i<2; i++) {
-//            hm.add(channel.createMessage(String.valueOf(i)));
-            hm[i] = channel.createMessage(String.valueOf(i));
-        }
-        return hm;
-//        return Mono.when(damn -> hm.get(0), hm.get(1));
-//        return channel.createMessage("AAAAAA");
-
-    }
-
-//    private static Mono<Object> hm(Message message) {
-//        message.getChannel()
-//                .flatMap(channel -> Mono.when(channel.createMessage()))
-////        return Mono.when(channel.create)
-//    }
+//    private static Flux<Object> A
 
     private static Mono<Object> itemSearchUp(Message message) {
         // Name of Item taken from message
@@ -128,12 +140,6 @@ public class simpleBot {
             return message.getChannel()
                     .flatMap(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
         }
-
-        // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
-//        if(item.getDescription().length() > 1023) {
-//            return message.getChannel()
-//                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + item.getURL()));
-//        }
 
         // Create the embed of spell and return it
         EmbedCreateSpec embed = embedBuilder.itemEmbed(item, message);

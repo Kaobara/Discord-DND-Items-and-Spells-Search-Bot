@@ -14,7 +14,7 @@ public class DnDEmbedBuilder {
     public static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
         // Two types of spells: spells that can be upcasted and spells that cannot
         // TODO: find simpler way to add a new field, or some other else if
-        EmbedCreateSpec embed = EmbedCreateSpec.builder()
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
                 .color(Color.GREEN)
                 .title(spell.getName())
                 .url(spell.getURL())
@@ -22,23 +22,15 @@ public class DnDEmbedBuilder {
                 .addField("Source: ", spell.getSource(), false)
                 .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
                 .addField("", spell.getMetadata(), false)
-                .addField("", spell.getDescription(), false)
-                .addField(spell.getUpcastTitle(), spell.getUpcast(), false)
-                .timestamp(Instant.now())
-                .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png")
-                .build();
-        return embed;
-
+                .addField("", spell.getDescription(), false);
+                if(spell.canUpcast()) { builder.addField("At Higher Levels", spell.getUpcast(), false); }
+                builder.timestamp(Instant.now())
+                .footer("Spell", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png");
+        return builder.build();
     }
-
-//    public static EmbedCreateSpec itemEmbed(Item item, Message message) {
-//
-//    }
-
     public static EmbedCreateSpec itemEmbed(Item item, Message message) {
         ArrayList<String> descriptionSections = item.getDescriptionSections();
 
-        // Might have to figure out a better way to do this without duplication and hard coding
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
             .color(Color.GREEN)
             .title(item.getName())

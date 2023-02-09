@@ -25,14 +25,6 @@ public class Spell extends Entity {
         this.spellList = spellList;
     }
 
-    public String getUpcastTitle() {
-        if(canUpcast()) {
-            return "At Higher Levels";
-        } else {
-            return "";
-        }
-    }
-
     public String getMetadata() { return  metadata; }
 
     public String getUpcast() {
