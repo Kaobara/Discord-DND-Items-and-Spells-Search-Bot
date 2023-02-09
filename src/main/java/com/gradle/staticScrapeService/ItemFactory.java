@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class ItemFactory extends EntityFactory {
 
+    public Item createEmptyEntity() { return new Item(); }
+
     public Item createEntity(String itemName, ArrayList<String> fullContent) {
         // Split source, typeRarity, and description into separate categories
         String source = super.extractSource(fullContent);

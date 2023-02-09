@@ -10,6 +10,8 @@ public abstract class EntityFactory {
 
     public abstract Entity createEntity(String entityName, ArrayList<String> fullContent);
 
+    protected abstract Entity createEmptyEntity();
+
     public String extractSource(ArrayList<String> fullContent) {
         // Split source, levelSchool, metadata, and spellList into separate categories
         return fullContent.remove(TOP_I).replaceFirst("Source: ", "");

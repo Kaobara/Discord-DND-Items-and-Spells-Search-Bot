@@ -6,12 +6,15 @@ import java.util.Arrays;
 
 public class SpellFactory extends EntityFactory {
 
+    public Spell createEmptyEntity() { return new Spell(); }
+
+
     public Spell createEntity(String spellName, ArrayList<String> fullContent) {
         // Split source, levelSchool, metadata, and spellList into separate categories
         String source = super.extractSource(fullContent);
         String levelSchool = fullContent.remove(TOP_I);
         String metaData = fullContent.remove(TOP_I);
-        String spellList = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("..Spell Lists\\...", "");
+        String spellList = fullContent.remove(fullContent.size() + BOTTOM_I).replaceFirst("..Spell Lists\\... ", "");
 
         // If the spell can be upcast, place it into its own category as well
         String upcast = "";

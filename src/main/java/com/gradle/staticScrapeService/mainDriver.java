@@ -9,10 +9,10 @@ public class mainDriver {
         EntitySearch service = new EntitySearch();
 
         SpellSearch spellSearch = new SpellSearch();
-        Entity entity = spellSearch.searchEntityInfo("fireball");
+//        Entity entity = spellSearch.searchEntityInfo("fireball");
+        Spell entity = (Spell) spellSearch.searchEntityInfo("fireballsss");
 
         ItemSearch itemSearch = new ItemSearch();
-//        Entity entity = itemSearch.searchEntityInfo("Armblade");
 
         System.out.println(entity.getName());
         System.out.println(entity.getSource());

@@ -73,8 +73,14 @@ public class simpleBot {
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
         if(spell.getDescription().length() > 1023) {
+//            Mono<Object> thing = message.getChannel().flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
+//            Mono<Object> thing2 = message.getChannel().flatMap(channel -> Mono.when(channel.createMessage("noob"),
+//                    channel.createMes));
+//            thing + thing2;
             return message.getChannel()
-                    .flatMap(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
+                    .flatMap(channel -> Mono.when(channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()),
+                                                  channel.createMessage("Noob")));
+//                    .flatMap(channel -> channel.createMessage("Boon"));
         }
 
         // Create the embed of spell and return it

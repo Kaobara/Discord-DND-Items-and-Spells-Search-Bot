@@ -119,9 +119,9 @@ public class EntitySearch {
         entityName = entityName.toLowerCase();
         String entityNameHref = entityName.toLowerCase().replace(" ", "-");
         entityName = WordUtils.capitalizeFully(entityName);
-        if(!entityName.contains(entityName)){
+        if(!entityList.contains(entityName)){
             System.out.println("HMMMM");
-            return new Entity();
+            return entityFactory.createEmptyEntity();
         }
         entityNameHref = entityNameHref.replace("'", "");
         entityNameHref = entityNameHref.replace(":", "");
