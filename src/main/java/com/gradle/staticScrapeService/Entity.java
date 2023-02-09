@@ -1,5 +1,6 @@
 package com.gradle.staticScrapeService;
 
+import javax.swing.text.StyledEditorKit;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,7 +8,7 @@ public class Entity {
     final private int MAX_DESCRIPTION_LENGTH = 1023;
     private String name, source, description;
     private String URL;
-    private boolean empty = false, hasLongDescription = false;
+    private boolean empty = false, longDescription = false;
     private ArrayList<String> descSections = new ArrayList<>();
     private int MAX_DESC_FIELDS = 10;
 
@@ -44,13 +45,15 @@ public class Entity {
         return description;
     }
 
-    public ArrayList<String> getDescriptionSections() {
+    public Boolean hasLongDescription() { return longDescription; }
+
+    public void buildDescriptionSections() {
         if(description.length() < MAX_DESCRIPTION_LENGTH) {
             descSections.add(description);
-            return descSections;
-        }
+            return;
+        } else if (longDescription == true) { return; }
 
-        hasLongDescription = true;
+        longDescription = true;
         String tempString = "";
         String[] descSplit = description.split("\n");
         String currentDescSection = "";
@@ -62,8 +65,8 @@ public class Entity {
                 tempString = currentDescLine + "\n";
             }
         }
-
-        return descSections;
     }
 
+
+    public ArrayList<String> getDescSections() { return descSections; }
 }

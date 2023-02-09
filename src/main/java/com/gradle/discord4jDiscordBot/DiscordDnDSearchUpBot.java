@@ -6,10 +6,8 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateMono;
-import discord4j.discordjson.json.gateway.MessageCreate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,7 +15,7 @@ import com.gradle.staticScrapeService.*;
 
 import java.util.ArrayList;
 
-public class simpleBot {
+public class DiscordDnDSearchUpBot {
     public static void main(String[] args) {
         GatewayDiscordClient client = DiscordClientBuilder.create("TOKEN HERE")
                 .build()
@@ -35,7 +33,7 @@ public class simpleBot {
         client.getEventDispatcher().on(MessageCreateEvent.class)
                 .map(event -> event.getMessage())
                 .filter(message -> message.getContent().startsWith("!" + botUsername ))
-                .flatMap(simpleBot::botCommands)
+                .flatMap(DiscordDnDSearchUpBot::botCommands)
                 .subscribe();
 
         client.onDisconnect().block();
@@ -75,56 +73,26 @@ public class simpleBot {
         }
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
-//        if(spell.getDescription().length() < 1023) {
-
-        ArrayList<EmbedCreateSpec> embeds= new ArrayList<>();
-//        EmbedCreateSpec embed1 = embedBuilder.spellEmbed(spell, message);
-//        EmbedCreateSpec embed2 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
-//        EmbedCreateSpec embed3 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
-//        embeds.add(.createMessage(embed1));
-//        embeds.add(channel.createMessage(embed2));
-//        embeds.add(channel.createMessage(embed3));
-        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
+        if(spell.getDescription().length() > 1023) {
             return message.getChannel()
                     .flatMapMany(channel -> {
                         ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        EmbedCreateSpec embed1 = embedBuilder.spellEmbed(spell, message);
-                        EmbedCreateSpec embed2 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
-                        EmbedCreateSpec embed3 = embedBuilder.continuedDescEmbed(spell.getDescription(), message);
-                        messageCreateMonos.add(channel.createMessage(embed1));
-                        messageCreateMonos.add(channel.createMessage(embed2));
-                        messageCreateMonos.add(channel.createMessage(embed3));
+                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.longSpellEmbed(spell, message);
+                        System.out.println(embeds.size());
+                        for(EmbedCreateSpec embed : embeds) {
+                            messageCreateMonos.add(channel.createMessage(embed));
+                        }
 
                         return Flux.fromIterable(messageCreateMonos);
-//                        return Flux.from(channel.createMessage(embed1));
-                    }).flatMap(death -> Flux.from(death));
-//                    .flatMapMany(channel -> {
-//                        return Flux.fromIterable(embeds);
-//                        return Flux.from(channel.createMessage(embed));
-//                    });
-
-//                    thingy.subscribe();
-//
-//                    .flatMapMany(channel -> channel.createMessage("Description of Spell is too long\nGo to: " + spell.getURL()));
-//        }
+                    }).flatMap(messagesToSend -> Flux.from(messagesToSend));
+        }
 
         // Create the embed of spell and return it
-//        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
-//
-//        return message.getChannel()
-//                .flatMapMany(channel -> channel.createMessage(embed));
-    }
+        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
 
-//    private static MessageCreateMono[] gm(MessageChannel channel) {
-//        MessageCreateMono[] hm = new MessageCreateMono[3];
-//        for(int i = 0; i<2; i++) {
-//            hm[i] = channel.createMessage(String.valueOf(i));
-//        }
-//        return hm;
-////        return Mono.when(damn -> hm.get(0), hm.get(1));
-////        return channel.createMessage("AAAAAA");
-//
-//    }
+        return message.getChannel()
+                .flatMapMany(channel -> channel.createMessage(embed));
+    }
 
 //    private static Flux<Object> A
 
