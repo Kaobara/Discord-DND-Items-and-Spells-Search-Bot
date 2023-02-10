@@ -69,7 +69,6 @@ public class DiscordDnDSearchUpBot {
         if(spell.isEmpty()) {
             return message.getChannel()
                     .flatMapMany(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
-//                        channel.createMessage("Spell not found. Please check if you spelled it correctly"));
         }
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
@@ -93,8 +92,6 @@ public class DiscordDnDSearchUpBot {
         return message.getChannel()
                 .flatMapMany(channel -> channel.createMessage(embed));
     }
-
-//    private static Flux<Object> A
 
     private static Mono<Object> itemSearchUp(Message message) {
         // Name of Item taken from message

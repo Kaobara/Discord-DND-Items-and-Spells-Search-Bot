@@ -14,11 +14,13 @@ public class mainDriver {
 //        Entity entity = spellSearch.searchEntityInfo("fireball");
 //        Spell entity = (Spell) spellSearch.searchEntityInfo("symbol");
         Item entity = (Item) itemSearch.searchEntityInfo("Deck of Many Things");
-        ArrayList<String> entityDescriptions = entity.getDescriptionSections();
-        for(String descriptionSection : entityDescriptions) {
-            System.out.println("=======");
-            System.out.println(descriptionSection);
-        }
+//        ArrayList<String> entityDescriptions = entity.getDescriptionSections();
+//        for(String descriptionSection : entityDescriptions) {
+//            System.out.println("=======");
+//            System.out.println(descriptionSection);
+//        }
+
+
 
 
 //        System.out.println(entity.getName());

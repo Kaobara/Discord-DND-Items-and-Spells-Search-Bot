@@ -76,27 +76,46 @@ public class EntitySearch {
             if(node.getNodeName().contains("li")) { paragraphContent = "   - " + paragraphContent; }
             textContents.add(paragraphContent);
         }
+
+        // TESTING PURPOSES
+        getTable(page);
+
+
         return textContents;
     }
 
-    public ArrayList<String> getEntityTables(HtmlPage page, String entityType) {
+    public ArrayList<String> getListofEntities(HtmlPage page, String entityType) {
         HtmlDivision magicItems = page.getFirstByXPath("//div[@class='yui-navset']");
         List<HtmlTable> magicTables = magicItems.getByXPath("//table[@class='wiki-content-table']");
 
-        ArrayList<String> spellEntityString = new ArrayList<>();
+        ArrayList<String> entityStrings = new ArrayList<>();
 
         for(HtmlTable magicTable : magicTables) {
             for (final HtmlTableRow row : magicTable.getRows()) {
                 if(row.getCell(0).getTextContent().compareTo(entityType + " Name") != 0) {
-                    spellEntityString.add(WordUtils.capitalizeFully(row.getCell(0).getTextContent()));
-//                    spellEntityString.add(.capitalize);
+                    entityStrings.add(WordUtils.capitalizeFully(row.getCell(0).getTextContent()));
                 }
             }
+        }
+
+
+        Collections.sort(entityStrings);
+        return  entityStrings;
+    }
+
+    public void getTable(HtmlPage page) {
+        List<HtmlTable> tables = page.getByXPath("//table[@class='wiki-content-table']");
+        if(tables.isEmpty()) {
+            System.out.println("NO TABLE IN PAGE");
+            return;
+        }
+
+//        int numCol
+        for(HtmlTable table : tables) {
+            ContentTable contentTable = new ContentTable(table);
 
         }
 
-        Collections.sort(spellEntityString);
-        return  spellEntityString;
     }
 
     public String formatParagraphNodes(String formattedText, DomNode node) {
@@ -135,6 +154,7 @@ public class EntitySearch {
 
         Entity entity = entityFactory.createEntity(entityName, entityContent);
         entity.setURL(entityURL);
+
 
 
         return entity;
