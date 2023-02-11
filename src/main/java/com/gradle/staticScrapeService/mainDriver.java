@@ -11,23 +11,10 @@ public class mainDriver {
 
         SpellSearch spellSearch = new SpellSearch();
         ItemSearch itemSearch = new ItemSearch();
-//        Entity entity = spellSearch.searchEntityInfo("fireball");
-//        Spell entity = (Spell) spellSearch.searchEntityInfo("symbol");
-        Item entity = (Item) itemSearch.searchEntityInfo("Deck of Many Things");
-//        ArrayList<String> entityDescriptions = entity.getDescriptionSections();
-//        for(String descriptionSection : entityDescriptions) {
-//            System.out.println("=======");
-//            System.out.println(descriptionSection);
-//        }
-
-
-
-
-//        System.out.println(entity.getName());
-//        System.out.println(entity.getSource());
-////        System.out.println(entity.getTypeRarity());
-//        System.out.println(entity.getDescription());
-//        System.out.println(entity.getURL());
+        Item entity = (Item) itemSearch.searchEntityInfo("Potion of Healing");
+        if(entity.isHasTable()){
+            System.out.println(entity.getTableContent(0));
+        }
     }
 
 

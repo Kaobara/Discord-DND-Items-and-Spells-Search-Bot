@@ -9,6 +9,7 @@ import javax.swing.text.html.HTMLDocument;
 import java.io.IOException;
 
 import java.io.FileWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,8 +79,10 @@ public class EntitySearch {
         }
 
         // TESTING PURPOSES
-        getTable(page);
-
+//        ArrayList<ContentTable> tables = getTables(page);
+//        if(!tables.isEmpty()) {
+//
+//        }
 
         return textContents;
     }
@@ -103,18 +106,24 @@ public class EntitySearch {
         return  entityStrings;
     }
 
-    public void getTable(HtmlPage page) {
-        List<HtmlTable> tables = page.getByXPath("//table[@class='wiki-content-table']");
-        if(tables.isEmpty()) {
+    public ArrayList<ContentTable> getTables(String URL) {
+        // TODO decouple and somehow combine getTables with getMainContent
+        HtmlPage page = gotoPage(URL);
+        List<HtmlTable> originalTables = page.getByXPath("//table[@class='wiki-content-table']");
+        if(originalTables.isEmpty()) {
             System.out.println("NO TABLE IN PAGE");
-            return;
+            return null;
         }
+
+        ArrayList<ContentTable> tables = new ArrayList<>();
 
 //        int numCol
-        for(HtmlTable table : tables) {
+        for(HtmlTable table : originalTables) {
             ContentTable contentTable = new ContentTable(table);
-
+            tables.add(contentTable);
         }
+
+        return tables;
 
     }
 
@@ -152,7 +161,9 @@ public class EntitySearch {
             System.out.println(string);
         }
 
-        Entity entity = entityFactory.createEntity(entityName, entityContent);
+        ArrayList<ContentTable> tables = getTables(entityURL);
+
+        Entity entity = entityFactory.createEntity(entityName, entityContent, tables);
         entity.setURL(entityURL);
 
 

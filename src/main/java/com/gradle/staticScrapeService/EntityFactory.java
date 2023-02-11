@@ -1,5 +1,7 @@
 package com.gradle.staticScrapeService;
 
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+
 import java.util.ArrayList;
 
 public abstract class EntityFactory {
@@ -7,8 +9,9 @@ public abstract class EntityFactory {
     final protected int BOTTOM_I = -1;
 
     protected String entityListName;
+    protected ArrayList<HtmlTable> tables;
 
-    public abstract Entity createEntity(String entityName, ArrayList<String> fullContent);
+    public abstract Entity createEntity(String entityName, ArrayList<String> fullContent, ArrayList<ContentTable> tables);
 
     protected abstract Entity createEmptyEntity();
 

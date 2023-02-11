@@ -1,5 +1,7 @@
 package com.gradle.staticScrapeService;
 
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +11,7 @@ public class SpellFactory extends EntityFactory {
     public Spell createEmptyEntity() { return new Spell(); }
 
 
-    public Spell createEntity(String spellName, ArrayList<String> fullContent) {
+    public Spell createEntity(String spellName, ArrayList<String> fullContent, ArrayList<ContentTable> tables) {
         // Split source, levelSchool, metadata, and spellList into separate categories
         String source = super.extractSource(fullContent);
         String levelSchool = fullContent.remove(TOP_I);
@@ -25,7 +27,13 @@ public class SpellFactory extends EntityFactory {
         // Combine the description into a single string
         String description = super.getDescription(fullContent);
 
-        return new Spell(spellName, source, levelSchool, metaData, description, upcast, spellList);
+        Spell spell = new Spell(spellName, source, levelSchool, metaData, description, upcast, spellList);
+
+        if(tables != null){
+            spell.addTablesIntoEntity(tables);
+        }
+
+        return spell;
     }
 
 }

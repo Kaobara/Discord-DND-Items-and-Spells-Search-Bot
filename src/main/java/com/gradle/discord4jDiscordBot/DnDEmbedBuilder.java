@@ -1,5 +1,6 @@
 package com.gradle.discord4jDiscordBot;
 
+import com.gradle.staticScrapeService.ContentTable;
 import com.gradle.staticScrapeService.Entity;
 import com.gradle.staticScrapeService.Item;
 import com.gradle.staticScrapeService.Spell;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 
 public class DnDEmbedBuilder {
     public static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
+        spell.buildDescriptionSections();
+        ArrayList<String> descriptionSections = spell.getDescSections();
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
             .color(Color.GREEN)
             .title(spell.getName())
@@ -21,9 +24,12 @@ public class DnDEmbedBuilder {
             .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
             .addField("", spell.getMetadata(), false);
 
-            if(!spell.hasLongDescription()) {builder.addField("", spell.getDescription(), false);
-            } else {
-                builder.addField("", spell.getDescSections().get(0), false);
+//            if(!spell.hasLongDescription()) {builder.addField("", spell.getDescription(), false);
+//            } else {
+//                builder.addField("", spell.getDescSections().get(0), false);
+//            }
+            for(int i=0; i<descriptionSections.size(); i++){
+                builder = builder.addField("", descriptionSections.get(i), false);
             }
 
             if(spell.canUpcast()) { builder.addField("At Higher Levels", spell.getUpcast(), false); }
@@ -75,6 +81,31 @@ public class DnDEmbedBuilder {
             embeds.add(continuedDescEmbed(descriptionSection.get(i) ));
         }
 
+        return embeds;
+    }
+
+    public static EmbedCreateSpec tableEmbed(String tableContents) {
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
+                .color(Color.GREEN)
+                .description(tableContents)
+                .timestamp(Instant.now())
+                .footer("Table", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png");
+
+        return builder.build();
+    }
+
+    public static ArrayList<EmbedCreateSpec> entityAndTableEmbeds(Entity entity, Message message) {
+        ArrayList<EmbedCreateSpec> embeds = new ArrayList<>();
+
+        if(entity.getENTITY_TYPE() == "Spell") {
+            embeds.add(spellEmbed((Spell)entity, message));
+        }
+        if(entity.getENTITY_TYPE() == "Item") {
+            embeds.add(itemEmbed((Item)entity, message));
+        }
+        for(ContentTable contentTable : entity.getTables()){
+            embeds.add(tableEmbed(contentTable.getFullTable()));
+        }
         return embeds;
     }
 }

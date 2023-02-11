@@ -1,16 +1,22 @@
 package com.gradle.staticScrapeService;
 
-import javax.swing.text.StyledEditorKit;
+import com.gargoylesoftware.htmlunit.html.Html;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Entity {
     final private int MAX_DESCRIPTION_LENGTH = 1023;
     private String name, source, description;
     private String URL;
-    private boolean empty = false, longDescription = false;
+    private boolean empty = false, longDescription = false, hasTable = false;
+//    private ContentTable contentTable;
+    private ArrayList<ContentTable> tables = new ArrayList<>();
     private ArrayList<String> descSections = new ArrayList<>();
     private int MAX_DESC_FIELDS = 10;
+    protected String ENTITY_TYPE;
+
+    public String getENTITY_TYPE() {return ENTITY_TYPE;}
 
     public Entity() {
         empty = true;
@@ -67,6 +73,36 @@ public class Entity {
         }
     }
 
+    public void addTablesIntoEntity(ArrayList<ContentTable> tables) {
+        hasTable = true;
+//        for(HtmlTable table : tables) {
+//            addTable(table);
+//        }
+        this.tables = tables;
+    }
+
+    private void addTable (HtmlTable table) {
+        hasTable = true;
+        tables.add(new ContentTable(table));
+    }
+
+    public String getTableContent(int tableIndex){
+        if(!hasTable) {
+            return "";
+        }
+        return tables.get(tableIndex).getFullTable();
+    }
+
+    public ArrayList<ContentTable> getTables() {
+        if(!hasTable) {
+            return null;
+        }
+        return tables;
+    }
+
+    public boolean isHasTable() {
+        return hasTable;
+    }
 
     public ArrayList<String> getDescSections() { return descSections; }
 }

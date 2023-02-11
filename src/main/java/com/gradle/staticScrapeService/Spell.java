@@ -14,6 +14,7 @@ public class Spell extends Entity {
 
     public Spell(String name, String source, String levelSchool, String metadata, String description, String upcast, String spellList) {
         super(name, source, description);
+        super.ENTITY_TYPE = "Spell";
         this.levelSchool = levelSchool;
         this.metadata = metadata;
 

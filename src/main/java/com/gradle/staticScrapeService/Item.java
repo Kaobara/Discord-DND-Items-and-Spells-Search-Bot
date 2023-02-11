@@ -7,6 +7,7 @@ public class Item extends  Entity{
     public Item(String name, String source, String typeRarity, String description) {
         super(name, source, description);
         this.typeRarity = typeRarity;
+        super.ENTITY_TYPE = "Item";
     }
 
     public String getTypeRarity() {

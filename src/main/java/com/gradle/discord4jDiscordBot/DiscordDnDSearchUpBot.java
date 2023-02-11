@@ -72,16 +72,15 @@ public class DiscordDnDSearchUpBot {
         }
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
-        if(spell.getDescription().length() > 1023) {
+        if(spell.isHasTable()) {
             return message.getChannel()
                     .flatMapMany(channel -> {
                         ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.longSpellEmbed(spell, message);
+                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.entityAndTableEmbeds(spell, message);
                         System.out.println(embeds.size());
                         for(EmbedCreateSpec embed : embeds) {
                             messageCreateMonos.add(channel.createMessage(embed));
                         }
-
                         return Flux.fromIterable(messageCreateMonos);
                     }).flatMap(messagesToSend -> Flux.from(messagesToSend));
         }
@@ -93,7 +92,7 @@ public class DiscordDnDSearchUpBot {
                 .flatMapMany(channel -> channel.createMessage(embed));
     }
 
-    private static Mono<Object> itemSearchUp(Message message) {
+    private static Flux<Object> itemSearchUp(Message message) {
         // Name of Item taken from message
         String itemName = message.getContent().replace(currentBotCommand, "");
 
@@ -103,14 +102,27 @@ public class DiscordDnDSearchUpBot {
         // If empty, spell not found from list
         if(item.isEmpty()) {
             return message.getChannel()
-                    .flatMap(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
+                    .flatMapMany(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
+        }
+
+        if(item.isHasTable()) {
+            return message.getChannel()
+                    .flatMapMany(channel -> {
+                        ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
+                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.entityAndTableEmbeds(item, message);
+                        System.out.println(embeds.size());
+                        for(EmbedCreateSpec embed : embeds) {
+                            messageCreateMonos.add(channel.createMessage(embed));
+                        }
+                        return Flux.fromIterable(messageCreateMonos);
+                    }).flatMap(messagesToSend -> Flux.from(messagesToSend));
         }
 
         // Create the embed of spell and return it
         EmbedCreateSpec embed = embedBuilder.itemEmbed(item, message);
 
         return message.getChannel()
-                .flatMap(channel -> channel.createMessage(embed));
+                .flatMapMany(channel -> channel.createMessage(embed));
     }
 
 
