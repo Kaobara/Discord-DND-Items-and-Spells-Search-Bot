@@ -48,13 +48,24 @@ public class Entity {
         String tempString = "";
         String[] descSplit = description.split("\n");
         String currentDescSection;
+        int i = 0;
         for(String currentDescLine : descSplit) {
             currentDescSection = tempString;
             tempString += currentDescLine + "\n";
+
+            // Check if a section has reached "maximum capacity"
+            // If it has, add that section to the description arraylist
+            // and start the next section
             if(tempString.length() > MAX_DESCRIPTION_LENGTH) {
                 descSections.add(currentDescSection);
                 tempString = currentDescLine + "\n";
             }
+
+            // If it's the last line of the description, add it into the end.
+            if (i == descSplit.length-1) {
+                descSections.add(tempString);
+            }
+            i++;
         }
     }
 

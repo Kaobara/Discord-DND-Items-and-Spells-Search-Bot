@@ -72,16 +72,7 @@ public class DiscordDnDSearchUpBot {
 
         // Embed has a character limit of 1024. If the description is too long, just give the URL of spell to channel
         if(spell.isHasTable()) {
-            return message.getChannel()
-                    .flatMapMany(channel -> {
-                        ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        ArrayList<EmbedCreateSpec> embeds = DnDEmbedBuilder.entityAndTableEmbeds(spell, message);
-                        System.out.println(embeds.size());
-                        for(EmbedCreateSpec embed : embeds) {
-                            messageCreateMonos.add(channel.createMessage(embed));
-                        }
-                        return Flux.fromIterable(messageCreateMonos);
-                    }).flatMap(Flux::from);
+            return EntityDescTableMessages(spell, message);
         }
 
         // Create the embed of spell and return it
@@ -104,17 +95,9 @@ public class DiscordDnDSearchUpBot {
                     .flatMapMany(channel -> channel.createMessage("Item not found. Please check if you spelled it correctly"));
         }
 
+        // If item has table, 
         if(item.isHasTable()) {
-            return message.getChannel()
-                    .flatMapMany(channel -> {
-                        ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        ArrayList<EmbedCreateSpec> embeds = DnDEmbedBuilder.entityAndTableEmbeds(item, message);
-                        System.out.println(embeds.size());
-                        for(EmbedCreateSpec embed : embeds) {
-                            messageCreateMonos.add(channel.createMessage(embed));
-                        }
-                        return Flux.fromIterable(messageCreateMonos);
-                    }).flatMap(Flux::from);
+            return EntityDescTableMessages(item, message);
         }
 
         // Create the embed of spell and return it
@@ -124,6 +107,17 @@ public class DiscordDnDSearchUpBot {
                 .flatMapMany(channel -> channel.createMessage(embed));
     }
 
-
+    private static Flux<Object> EntityDescTableMessages(Entity entity, Message message) {
+        return message.getChannel()
+                .flatMapMany(channel -> {
+                    ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
+                    ArrayList<EmbedCreateSpec> embeds = DnDEmbedBuilder.entityAndTableEmbeds(entity, message);
+                    System.out.println(embeds.size());
+                    for(EmbedCreateSpec embed : embeds) {
+                        messageCreateMonos.add(channel.createMessage(embed));
+                    }
+                    return Flux.fromIterable(messageCreateMonos);
+                }).flatMap(Flux::from);
+    }
 
 }
