@@ -9,7 +9,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateMono;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import com.gradle.staticScrapeService.*;
 
@@ -22,16 +21,17 @@ public class DiscordDnDSearchUpBot {
                 .login()
                 .block();
 
+        assert client != null;
         client.getEventDispatcher().on(ReadyEvent.class)
                 .subscribe(event -> {
                     User self = event.getSelf();
                     botUsername = self.getUsername();
-                    System.out.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
+                    System.out.printf("Logged in as %s#%s%n", self.getUsername(), self.getDiscriminator());
                     System.out.println(self);
                 });
 
         client.getEventDispatcher().on(MessageCreateEvent.class)
-                .map(event -> event.getMessage())
+                .map(MessageCreateEvent::getMessage)
                 .filter(message -> message.getContent().startsWith("!" + botUsername ))
                 .flatMap(DiscordDnDSearchUpBot::botCommands)
                 .subscribe();
@@ -39,10 +39,9 @@ public class DiscordDnDSearchUpBot {
         client.onDisconnect().block();
     }
 
-    private static SpellSearch spellSearch = new SpellSearch();
-    private static ItemSearch itemSearch = new ItemSearch();
+    private static final SpellSearch spellSearch = new SpellSearch();
+    private static final ItemSearch itemSearch = new ItemSearch();
     private static String botUsername;
-    private static DnDEmbedBuilder embedBuilder = new DnDEmbedBuilder();
     private static String currentBotCommand;
 
     // List of all bot commands that can be done
@@ -76,17 +75,17 @@ public class DiscordDnDSearchUpBot {
             return message.getChannel()
                     .flatMapMany(channel -> {
                         ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.entityAndTableEmbeds(spell, message);
+                        ArrayList<EmbedCreateSpec> embeds = DnDEmbedBuilder.entityAndTableEmbeds(spell, message);
                         System.out.println(embeds.size());
                         for(EmbedCreateSpec embed : embeds) {
                             messageCreateMonos.add(channel.createMessage(embed));
                         }
                         return Flux.fromIterable(messageCreateMonos);
-                    }).flatMap(messagesToSend -> Flux.from(messagesToSend));
+                    }).flatMap(Flux::from);
         }
 
         // Create the embed of spell and return it
-        EmbedCreateSpec embed = embedBuilder.spellEmbed(spell, message);
+        EmbedCreateSpec embed = DnDEmbedBuilder.spellEmbed(spell, message);
 
         return message.getChannel()
                 .flatMapMany(channel -> channel.createMessage(embed));
@@ -109,17 +108,17 @@ public class DiscordDnDSearchUpBot {
             return message.getChannel()
                     .flatMapMany(channel -> {
                         ArrayList<MessageCreateMono> messageCreateMonos= new ArrayList<>();
-                        ArrayList<EmbedCreateSpec> embeds = embedBuilder.entityAndTableEmbeds(item, message);
+                        ArrayList<EmbedCreateSpec> embeds = DnDEmbedBuilder.entityAndTableEmbeds(item, message);
                         System.out.println(embeds.size());
                         for(EmbedCreateSpec embed : embeds) {
                             messageCreateMonos.add(channel.createMessage(embed));
                         }
                         return Flux.fromIterable(messageCreateMonos);
-                    }).flatMap(messagesToSend -> Flux.from(messagesToSend));
+                    }).flatMap(Flux::from);
         }
 
         // Create the embed of spell and return it
-        EmbedCreateSpec embed = embedBuilder.itemEmbed(item, message);
+        EmbedCreateSpec embed = DnDEmbedBuilder.itemEmbed(item, message);
 
         return message.getChannel()
                 .flatMapMany(channel -> channel.createMessage(embed));

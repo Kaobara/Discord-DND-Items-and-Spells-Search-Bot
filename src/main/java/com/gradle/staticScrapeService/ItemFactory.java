@@ -8,7 +8,7 @@ public class ItemFactory extends EntityFactory {
 
     public Item createEntity(String itemName, ArrayList<String> fullContent, ArrayList<ContentTable> tables) {
         // Split source, typeRarity, and description into separate categories
-        String source = super.extractSource(fullContent);
+        String source = fullContent.remove(TOP_I).replaceFirst("Source: ", "");;
         String typeRarity = fullContent.remove(TOP_I);
 
         String description = getDescription(fullContent);

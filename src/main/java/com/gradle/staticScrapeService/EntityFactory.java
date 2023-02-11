@@ -1,36 +1,27 @@
 package com.gradle.staticScrapeService;
 
-import com.gargoylesoftware.htmlunit.html.HtmlTable;
-
 import java.util.ArrayList;
 
 public abstract class EntityFactory {
     final protected int TOP_I = 0;
     final protected int BOTTOM_I = -1;
 
-    protected String entityListName;
-    protected ArrayList<HtmlTable> tables;
-
     public abstract Entity createEntity(String entityName, ArrayList<String> fullContent, ArrayList<ContentTable> tables);
 
     protected abstract Entity createEmptyEntity();
 
-    public String extractSource(ArrayList<String> fullContent) {
-        // Split source, levelSchool, metadata, and spellList into separate categories
-        return fullContent.remove(TOP_I).replaceFirst("Source: ", "");
-    }
-
     protected String getDescription(ArrayList<String> remainingContent) {
-        String description = "";
+        StringBuilder description = new StringBuilder();
         for(String content : remainingContent) {
-            if(description.isEmpty()) {
-                description = content;
+            if(description.length() == 0) {
+                description = new StringBuilder(content);
             } else {
-                if(content.startsWith("-")) { description += "\n" + content;}
-                else {description += "\n\n" + content;}
+                if(content.startsWith("-")) { description.append("\n").append(content);}
+                else {
+                    description.append("\n\n").append(content);}
             }
         }
-        return description;
+        return description.toString();
     }
 
 }

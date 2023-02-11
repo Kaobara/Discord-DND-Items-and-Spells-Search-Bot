@@ -1,35 +1,23 @@
 package com.gradle.staticScrapeService;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
-import com.sun.scenario.effect.Merge;
 import org.apache.commons.text.WordUtils;
-import org.w3c.dom.NamedNodeMap;
-
-import javax.swing.text.html.HTMLDocument;
 import java.io.IOException;
 
-import java.io.FileWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class EntitySearch {
     protected final String WIKIDOT_URL = "http://dnd5e.wikidot.com";
+    private final String CONTENT_TABLE_XPPATH = "//table[@class='wiki-content-table']";
+    private final String ENTITY_LIST_XPPATH = "//div[@class='yui-navset']";
     protected String ENTITY_URL_HREF;
-    protected String mainContentID = "page-content";
+    protected String MAIN_CONTENT_ID = "page-content";
     protected String ENTITY_LIST_URL;
-    protected String entityType;
     protected EntityFactory entityFactory;
 
     protected ArrayList<String> entityList;
-
-    public ArrayList<String> getMainContent(String URL) {
-        HtmlPage page = gotoPage(URL);
-        return getContentByID(page, mainContentID);
-    }
-
 
     private static WebClient createWebClient() {
         WebClient webClient = new WebClient(BrowserVersion.CHROME);
@@ -61,35 +49,9 @@ public class EntitySearch {
         return page;
     }
 
-    public ArrayList<String> getContentByID(HtmlPage page, String elementId) {
-        DomElement element = page.getElementById(elementId);
-        ArrayList<String> textContents = new ArrayList<>();
-        DomNodeList<DomNode> nodes = element.querySelectorAll("p, li");
-        for(DomNode node : nodes) {
-            String paragraphContent = "";
-            for(DomNode childNode : node.getChildNodes()) {
-                if(childNode.getNodeName().equalsIgnoreCase("br")){
-                    continue;
-                }
-                String formattedText = formatParagraphNodes(childNode.getTextContent(), childNode);
-                paragraphContent += formattedText;
-            }
-            if(node.getNodeName().contains("li")) { paragraphContent = "   - " + paragraphContent; }
-            textContents.add(paragraphContent);
-        }
-
-        // TESTING PURPOSES
-//        ArrayList<ContentTable> tables = getTables(page);
-//        if(!tables.isEmpty()) {
-//
-//        }
-
-        return textContents;
-    }
-
     public ArrayList<String> getListofEntities(HtmlPage page, String entityType) {
-        HtmlDivision magicItems = page.getFirstByXPath("//div[@class='yui-navset']");
-        List<HtmlTable> magicTables = magicItems.getByXPath("//table[@class='wiki-content-table']");
+        HtmlDivision magicItems = page.getFirstByXPath(ENTITY_LIST_XPPATH);
+        List<HtmlTable> magicTables = magicItems.getByXPath(CONTENT_TABLE_XPPATH);
 
         ArrayList<String> entityStrings = new ArrayList<>();
 
@@ -101,15 +63,34 @@ public class EntitySearch {
             }
         }
 
-
         Collections.sort(entityStrings);
         return  entityStrings;
     }
 
-    public ArrayList<ContentTable> getTables(String URL) {
-        // TODO decouple and somehow combine getTables with getMainContent
+    public ArrayList<String> getContentByID(String URL, String elementId) {
         HtmlPage page = gotoPage(URL);
-        List<HtmlTable> originalTables = page.getByXPath("//table[@class='wiki-content-table']");
+        DomElement element = page.getElementById(elementId);
+        ArrayList<String> textContents = new ArrayList<>();
+        DomNodeList<DomNode> nodes = element.querySelectorAll("p, li");
+        for(DomNode node : nodes) {
+            StringBuilder paragraphContent = new StringBuilder();
+            for(DomNode childNode : node.getChildNodes()) {
+                if(childNode.getNodeName().equalsIgnoreCase("br")){
+                    continue;
+                }
+                String formattedText = formatParagraphNodes(childNode.getTextContent(), childNode);
+                paragraphContent.append(formattedText);
+            }
+            if(node.getNodeName().contains("li")) { paragraphContent.insert(0, "   - "); }
+            textContents.add(paragraphContent.toString());
+        }
+
+        return textContents;
+    }
+
+    public ArrayList<ContentTable> getTables(String URL) {
+        HtmlPage page = gotoPage(URL);
+        List<HtmlTable> originalTables = page.getByXPath(CONTENT_TABLE_XPPATH);
         if(originalTables.isEmpty()) {
             System.out.println("NO TABLE IN PAGE");
             return null;
@@ -117,14 +98,11 @@ public class EntitySearch {
 
         ArrayList<ContentTable> tables = new ArrayList<>();
 
-//        int numCol
         for(HtmlTable table : originalTables) {
             ContentTable contentTable = new ContentTable(table);
             tables.add(contentTable);
         }
-
         return tables;
-
     }
 
     public String formatParagraphNodes(String formattedText, DomNode node) {
@@ -136,6 +114,26 @@ public class EntitySearch {
         return formattedText;
     }
 
+    public Entity searchEntityInfo(String entityName) {
+        entityName = entityName.toLowerCase();
+        String entityNameHref = entityName.toLowerCase().replace(" ", "-");
+        entityName = WordUtils.capitalizeFully(entityName);
+        if(!entityList.contains(entityName)){
+            return entityFactory.createEmptyEntity();
+        }
+        entityNameHref = entityNameHref.replace("'", "");
+        entityNameHref = entityNameHref.replace(":", "");
+        String entityURL = WIKIDOT_URL + ENTITY_URL_HREF + entityNameHref;
+
+        ArrayList<String> entityContent = getContentByID(entityURL, MAIN_CONTENT_ID);
+        ArrayList<ContentTable> tables = getTables(entityURL);
+
+        Entity entity = entityFactory.createEntity(entityName, entityContent, tables);
+        entity.setURL(entityURL);
+
+        return entity;
+    }
+
     public void getAllLinks(HtmlPage page) {
         List<HtmlAnchor> links = page.getAnchors();
         for (HtmlAnchor link : links) {
@@ -144,36 +142,8 @@ public class EntitySearch {
         }
     }
 
-    public Entity searchEntityInfo(String entityName) {
-        entityName = entityName.toLowerCase();
-        String entityNameHref = entityName.toLowerCase().replace(" ", "-");
-        entityName = WordUtils.capitalizeFully(entityName);
-        if(!entityList.contains(entityName)){
-            System.out.println("HMMMM");
-            return entityFactory.createEmptyEntity();
-        }
-        entityNameHref = entityNameHref.replace("'", "");
-        entityNameHref = entityNameHref.replace(":", "");
-        String entityURL = WIKIDOT_URL + ENTITY_URL_HREF + entityNameHref;
-        System.out.println(entityURL);
-        ArrayList<String> entityContent = getMainContent(entityURL);
-        for(String string : entityContent) {
-            System.out.println(string);
-        }
-
-        ArrayList<ContentTable> tables = getTables(entityURL);
-
-        Entity entity = entityFactory.createEntity(entityName, entityContent, tables);
-        entity.setURL(entityURL);
-
-
-
-        return entity;
-    }
-
     public EntitySearch() {
     }
-
 
 
 }

@@ -3,23 +3,23 @@ package com.gradle.staticScrapeService;
 import com.gargoylesoftware.htmlunit.html.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContentTable {
-    private ArrayList<ArrayList<String>> rowContents = new ArrayList<>();
-    private ArrayList<ArrayList<String>> headers = new ArrayList<>();
-    private ArrayList<ArrayList<String>> rows = new ArrayList<>();
-    private ArrayList<String> finalTableContent = new ArrayList<>();
-    private String finalTable;
-    boolean tableInitialized = false;
-    private int numRows, numColumns =1;
+    final private ArrayList<ArrayList<String>> rowContents = new ArrayList<>();
+    final private ArrayList<ArrayList<String>> headers = new ArrayList<>();
+    final private ArrayList<String> finalTableContent = new ArrayList<>();
+    final private String finalTable;
+    private boolean tableInitialized = false;
+    private final int numRows;
+    private int numColumns =1;
     private final int FINAL_CELL_SIZE = 20;
 
     public ContentTable(HtmlTable table) {
         numRows = table.getRowCount();
-        List<HtmlTableBody> bodies = table.getBodies();
 
         boolean firstLoop = true;
+
+        //
         for (final HtmlTableRow row : table.getRows()) {
             // Deal with Headers (might make into its own method
             DomNodeList<DomNode> nodes = row.querySelectorAll("th");
@@ -37,21 +37,26 @@ public class ContentTable {
 
             // Cell per row
             for(final HtmlTableCell cell : row.getCells()) {
+                // Count the number of columns of the table by only the first row
                 if(firstLoop) {
                     numColumns++;
                 }
+
                 currentRow.add(cell.getTextContent());
             }
+
             if(firstLoop) {
                 firstLoop = false;
             }
+
             rowContents.add(currentRow);
         }
+
         finalTable = makeFormattedTable();
     }
 
     private String makeFormattedTable() {
-        String finalTable = "```";
+        StringBuilder finalTable = new StringBuilder("```");
         for(ArrayList<String> header : headers) {
             System.out.println("Header Line");
             finalTableContent.add(formatRow(header));
@@ -64,7 +69,7 @@ public class ContentTable {
         }
 
         for(String row : finalTableContent) {
-            finalTable += row + "\n";
+            finalTable.append(row).append("\n");
         }
 
         tableInitialized = true;
@@ -72,32 +77,32 @@ public class ContentTable {
     }
 
     private String formatRow(ArrayList<String> row) {
-        String finalRow = "| ";
+        StringBuilder finalRow = new StringBuilder("| ");
         for(String cell : row ) {
             if(cell.isEmpty()) {
                 continue;
             }
 
-            finalRow += cell;
+            finalRow.append(cell);
             for(int i = cell.length(); i<FINAL_CELL_SIZE; i++) {
-                finalRow+= " ";
+                finalRow.append(" ");
             }
 
-            finalRow += "|";
+            finalRow.append("|");
         }
 
-        return finalRow;
+        return finalRow.toString();
     }
 
     private String addDivider() {
-        String divider = "| ";
+        StringBuilder divider = new StringBuilder("| ");
         for(int i = 1; i<numColumns; i++) {
             for(int j = 0; j<FINAL_CELL_SIZE; j++) {
-                divider+="-";
+                divider.append("-");
             }
-            divider+="+";
+            divider.append("+");
         }
-        return divider;
+        return divider.toString();
 
     }
 

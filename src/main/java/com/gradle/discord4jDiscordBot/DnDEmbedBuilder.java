@@ -11,7 +11,11 @@ import discord4j.rest.util.Color;
 import java.time.Instant;
 import java.util.ArrayList;
 
-public class DnDEmbedBuilder {
+public final class DnDEmbedBuilder {
+    private static final DnDEmbedBuilder instance = new DnDEmbedBuilder();
+
+    private DnDEmbedBuilder() {}
+
     public static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
         spell.buildDescriptionSections();
         ArrayList<String> descriptionSections = spell.getDescSections();
@@ -24,12 +28,8 @@ public class DnDEmbedBuilder {
             .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
             .addField("", spell.getMetadata(), false);
 
-//            if(!spell.hasLongDescription()) {builder.addField("", spell.getDescription(), false);
-//            } else {
-//                builder.addField("", spell.getDescSections().get(0), false);
-//            }
-            for(int i=0; i<descriptionSections.size(); i++){
-                builder = builder.addField("", descriptionSections.get(i), false);
+            for (String descriptionSection : descriptionSections) {
+                builder = builder.addField("", descriptionSection, false);
             }
 
             if(spell.canUpcast()) { builder.addField("At Higher Levels", spell.getUpcast(), false); }
@@ -53,35 +53,10 @@ public class DnDEmbedBuilder {
             .timestamp(Instant.now())
             .footer("Item", "https://cdn.discordapp.com/attachments/719088475533738044/935830321168011284/Droop_Laughing_Final.png");
 
-            for(int i=0; i<descriptionSections.size(); i++){
-                builder = builder.addField("", descriptionSections.get(i), false);
-            }
-        return builder.build();
-    }
-
-    public static EmbedCreateSpec continuedDescEmbed(String continuedDescription) {
-        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
-                .color(Color.GREEN);
-//                for(int i=sectionIndex; i<sectionIndex+numFields; i++) {
-                    builder.addField("", continuedDescription, false);
-//                }
-
-//                builder.timestamp(Instant.now());
-        return builder.build();
-    }
-
-    public static ArrayList<EmbedCreateSpec> longSpellEmbed(Spell spell, Message message) {
-        spell.buildDescriptionSections();
-        ArrayList<String> descriptionSection = spell.getDescSections();
-        ArrayList<EmbedCreateSpec> embeds = new ArrayList<>();
-        EmbedCreateSpec spellEmbedTop = spellEmbed(spell, message);
-        embeds.add(spellEmbedTop);
-        System.out.println(descriptionSection.size());
-        for(int i = 1; i < descriptionSection.size(); i++) {
-            embeds.add(continuedDescEmbed(descriptionSection.get(i) ));
+        for (String descriptionSection : descriptionSections) {
+            builder = builder.addField("", descriptionSection, false);
         }
-
-        return embeds;
+        return builder.build();
     }
 
     public static EmbedCreateSpec tableEmbed(String tableContents) {
@@ -97,10 +72,10 @@ public class DnDEmbedBuilder {
     public static ArrayList<EmbedCreateSpec> entityAndTableEmbeds(Entity entity, Message message) {
         ArrayList<EmbedCreateSpec> embeds = new ArrayList<>();
 
-        if(entity.getENTITY_TYPE() == "Spell") {
+        if(entity instanceof Spell) {
             embeds.add(spellEmbed((Spell)entity, message));
         }
-        if(entity.getENTITY_TYPE() == "Item") {
+        if(entity instanceof Item) {
             embeds.add(itemEmbed((Item)entity, message));
         }
         for(ContentTable contentTable : entity.getTables()){

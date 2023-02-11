@@ -1,10 +1,8 @@
 package com.gradle.staticScrapeService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class mainDriver {
-    public static String WIKIDOT_URL = "http://dnd5e.wikidot.com";
+public class backendSearchTester {
     public static void main(String[] args) throws IOException{
 
         EntitySearch service = new EntitySearch();
