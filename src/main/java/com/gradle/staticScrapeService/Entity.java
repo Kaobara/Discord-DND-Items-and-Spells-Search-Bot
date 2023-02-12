@@ -6,14 +6,13 @@ public class Entity {
     final private int MAX_DESCRIPTION_LENGTH = 1023;
     private String name, source, description;
     private String URL;
-    private boolean empty = false, longDescription = false, hasTable = false;
+    private boolean empty = false, descInitialized = false, hasTable = false;
     private ArrayList<ContentTable> tables = new ArrayList<>();
     private final ArrayList<String> descSections = new ArrayList<>();
 
     public Entity() {
         empty = true;
     }
-
     public boolean isEmpty() { return empty; }
 
     public Entity(String name, String source,String description) {
@@ -38,13 +37,19 @@ public class Entity {
         return source;
     }
 
-    public void buildDescriptionSections() {
+    // It is initially created with a long string of description
+    // Due to Discord Embed fields having a max char size of 1024
+    // This function splits the description into Description Section chunks
+    // This allows embeds to fill fields based on sections
+    private void buildDescriptionSections() {
+        descInitialized = true;
+        // Short description
         if(description.length() < MAX_DESCRIPTION_LENGTH) {
             descSections.add(description);
             return;
-        } else if (longDescription) { return; }
+        }
 
-        longDescription = true;
+        // Populate descSections
         String tempString = "";
         String[] descSplit = description.split("\n");
         String currentDescSection;
@@ -69,10 +74,16 @@ public class Entity {
         }
     }
 
+    // Add tables into entity. If entity has no tables, set it. If it already has, add to collection.
     public void addTablesIntoEntity(ArrayList<ContentTable> tables) {
-        hasTable = true;
-        this.tables = tables;
+        if(hasTable == true) {
+            this.tables.addAll(tables);
+        } else {
+            hasTable = true;
+            this.tables = tables;
+        }
     }
+
     public String getTableContent(int tableIndex){
         if(!hasTable) {
             return "";
@@ -91,5 +102,10 @@ public class Entity {
         return hasTable;
     }
 
-    public ArrayList<String> getDescSections() { return descSections; }
+    public ArrayList<String> getDescSections() {
+        if (!descInitialized) {
+            buildDescriptionSections();
+        }
+        return descSections;
+    }
 }

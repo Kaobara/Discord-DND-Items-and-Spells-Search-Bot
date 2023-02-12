@@ -10,6 +10,8 @@ public abstract class EntityFactory {
 
     protected abstract Entity createEmptyEntity();
 
+    // Both items and spells contains descriptions. The description was initially made as an array of Strings
+    // from EntitySearch and the original web page. getDescription() reformats the entire array into a single string
     protected String getDescription(ArrayList<String> remainingContent) {
         StringBuilder description = new StringBuilder();
         for(String content : remainingContent) {

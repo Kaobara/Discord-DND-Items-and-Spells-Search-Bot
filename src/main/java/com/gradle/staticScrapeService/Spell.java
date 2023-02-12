@@ -8,6 +8,8 @@ public class Spell extends Entity {
         super();
     }
 
+    // A spell has the unique features of having a spell level, school, metadata (including components and duration)
+    // as well as what class spell lists the spell belongs to
     public Spell(String name, String source, String levelSchool, String metadata, String description, String upcast, String spellList) {
         super(name, source, description);
         this.levelSchool = levelSchool;

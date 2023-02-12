@@ -17,7 +17,6 @@ public final class DnDEmbedBuilder {
     private DnDEmbedBuilder() {}
 
     public static EmbedCreateSpec spellEmbed(Spell spell, Message message) {
-        spell.buildDescriptionSections();
         ArrayList<String> descriptionSections = spell.getDescSections();
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
             .color(Color.GREEN)
@@ -40,7 +39,6 @@ public final class DnDEmbedBuilder {
     }
 
     public static EmbedCreateSpec itemEmbed(Item item, Message message) {
-        item.buildDescriptionSections();
         ArrayList<String> descriptionSections = item.getDescSections();
 
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()

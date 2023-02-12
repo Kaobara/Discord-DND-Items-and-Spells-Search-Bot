@@ -3,6 +3,7 @@ package com.gradle.staticScrapeService;
 import java.io.IOException;
 
 public class backendSearchTester {
+    // This class is primarily used to test searches
     public static void main(String[] args) throws IOException{
 
         EntitySearch service = new EntitySearch();
@@ -11,7 +12,6 @@ public class backendSearchTester {
         ItemSearch itemSearch = new ItemSearch();
 //        Item entity = (Item) itemSearch.searchEntityInfo("Potion of Healing");
         Spell entity = (Spell) spellSearch.searchEntityInfo("Wish");
-        entity.buildDescriptionSections();
 
         for(String desct : entity.getDescSections()) {
             System.out.println(desct);

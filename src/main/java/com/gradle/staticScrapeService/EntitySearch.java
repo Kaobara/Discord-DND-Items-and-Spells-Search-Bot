@@ -19,6 +19,7 @@ public class EntitySearch {
 
     protected ArrayList<String> entityList;
 
+    // Create a web client to be used for scraping web pages
     private static WebClient createWebClient() {
         WebClient webClient = new WebClient(BrowserVersion.CHROME);
         webClient.getOptions().setThrowExceptionOnScriptError(false);
@@ -27,7 +28,8 @@ public class EntitySearch {
         return webClient;
     }
 
-    public HtmlPage gotoPage(String URL) {
+    // Go to a webpages based on a URL
+    protected HtmlPage gotoPage(String URL) {
         WebClient webClient = createWebClient();
         HtmlPage page = null;
 
@@ -49,12 +51,16 @@ public class EntitySearch {
         return page;
     }
 
-    public ArrayList<String> getListofEntities(HtmlPage page, String entityType) {
+    // Using an HtmlPage, this function returns a sorted list of all entities
+    // This is primarily used to find a list of all spells or items for checking correct input
+    protected ArrayList<String> getListofEntities(HtmlPage page, String entityType) {
         HtmlDivision magicItems = page.getFirstByXPath(ENTITY_LIST_XPPATH);
         List<HtmlTable> magicTables = magicItems.getByXPath(CONTENT_TABLE_XPPATH);
 
         ArrayList<String> entityStrings = new ArrayList<>();
 
+        // As of now, spells and items webpages has tables in which the header cell is under "Spell Name" or "Item Name"
+        // Because of this, scraping through filtering this is currently hardcoded into the code
         for(HtmlTable magicTable : magicTables) {
             for (final HtmlTableRow row : magicTable.getRows()) {
                 if(row.getCell(0).getTextContent().compareTo(entityType + " Name") != 0) {
@@ -67,13 +73,20 @@ public class EntitySearch {
         return  entityStrings;
     }
 
-    public ArrayList<String> getContentByID(String URL, String elementId) {
+    // grabs all strings that has the id <p> (paragraph> or <li> (lists). Ignore any <br> (break) tags, as well as add
+    // "  - " at the start of any bullet point lists.
+    private ArrayList<String> getContentByID(String URL, String elementId) {
         HtmlPage page = gotoPage(URL);
         DomElement element = page.getElementById(elementId);
         ArrayList<String> textContents = new ArrayList<>();
         DomNodeList<DomNode> nodes = element.querySelectorAll("p, li");
+
         for(DomNode node : nodes) {
             StringBuilder paragraphContent = new StringBuilder();
+
+            // Some nodes contain child nodes that usually includes data of its text format (bold or italicized)
+            // This for block allows those paragraph to be in the proper format
+            // Note: This does not work on anything that is both bolded or italicized
             for(DomNode childNode : node.getChildNodes()) {
                 if(childNode.getNodeName().equalsIgnoreCase("br")){
                     continue;
@@ -81,6 +94,7 @@ public class EntitySearch {
                 String formattedText = formatParagraphNodes(childNode.getTextContent(), childNode);
                 paragraphContent.append(formattedText);
             }
+
             if(node.getNodeName().contains("li")) { paragraphContent.insert(0, "   - "); }
             textContents.add(paragraphContent.toString());
         }
@@ -88,16 +102,15 @@ public class EntitySearch {
         return textContents;
     }
 
-    public ArrayList<ContentTable> getTables(String URL) {
+    // If a page has at least 1 table in it, grab all tables and contents of the tables as a list of ContentTables
+    private ArrayList<ContentTable> getTables(String URL) {
         HtmlPage page = gotoPage(URL);
         List<HtmlTable> originalTables = page.getByXPath(CONTENT_TABLE_XPPATH);
-        if(originalTables.isEmpty()) {
-            System.out.println("NO TABLE IN PAGE");
-            return null;
-        }
+
+        // There are no tables in this page
+        if(originalTables.isEmpty()) { return null; }
 
         ArrayList<ContentTable> tables = new ArrayList<>();
-
         for(HtmlTable table : originalTables) {
             ContentTable contentTable = new ContentTable(table);
             tables.add(contentTable);
@@ -105,7 +118,9 @@ public class EntitySearch {
         return tables;
     }
 
-    public String formatParagraphNodes(String formattedText, DomNode node) {
+    // Some nodes has <em> and <strong> names to make content either italicized or bolded.
+    // This function manually changes forms a string with the appropriate tags for markdown
+    private String formatParagraphNodes(String formattedText, DomNode node) {
         if(node.getNodeName().contains("em")) {
             formattedText = "_" + formattedText + "_";
         } else if(node.getNodeName().contains("strong")) {
@@ -114,6 +129,7 @@ public class EntitySearch {
         return formattedText;
     }
 
+    // Search up an entity based on its name. Uses above methods
     public Entity searchEntityInfo(String entityName) {
         entityName = entityName.toLowerCase();
         String entityNameHref = entityName.toLowerCase().replace(" ", "-");
@@ -123,8 +139,8 @@ public class EntitySearch {
         }
         entityNameHref = entityNameHref.replace("'", "");
         entityNameHref = entityNameHref.replace(":", "");
-        String entityURL = WIKIDOT_URL + ENTITY_URL_HREF + entityNameHref;
 
+        String entityURL = WIKIDOT_URL + ENTITY_URL_HREF + entityNameHref;
         ArrayList<String> entityContent = getContentByID(entityURL, MAIN_CONTENT_ID);
         ArrayList<ContentTable> tables = getTables(entityURL);
 
@@ -134,7 +150,7 @@ public class EntitySearch {
         return entity;
     }
 
-    public void getAllLinks(HtmlPage page) {
+    private void getAllLinks(HtmlPage page) {
         List<HtmlAnchor> links = page.getAnchors();
         for (HtmlAnchor link : links) {
             String href = link.getHrefAttribute();

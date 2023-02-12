@@ -27,7 +27,6 @@ public class DiscordDnDSearchUpBot {
                     User self = event.getSelf();
                     botUsername = self.getUsername();
                     System.out.printf("Logged in as %s#%s%n", self.getUsername(), self.getDiscriminator());
-                    System.out.println(self);
                 });
 
         client.getEventDispatcher().on(MessageCreateEvent.class)
