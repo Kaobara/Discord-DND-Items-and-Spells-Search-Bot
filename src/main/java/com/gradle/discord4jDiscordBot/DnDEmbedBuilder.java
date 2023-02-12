@@ -25,7 +25,7 @@ public final class DnDEmbedBuilder {
             .url(spell.getURL())
             .author(message.getAuthor().get().getUsername(), "", message.getAuthor().get().getAvatarUrl())
             .addField("Source: ", spell.getSource(), false)
-            .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + " )_", false)
+            .addField("", spell.getLevelSchool() + " _(" + spell.getSpellList() + ")_", false)
             .addField("", spell.getMetadata(), false);
 
             for (String descriptionSection : descriptionSections) {
