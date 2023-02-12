@@ -33,5 +33,8 @@ You can watch the Video linked above to see what the bot can do. Essentially, th
 The commands are:
   - !(InsertBotNameHere) cast (Spellname)
   - !(InsertBotNameHere) find (Itemnname)
+
+![](https://github.com/Kaobara/Discord-DND-Items-and-Spells-Search-Bot/blob/main/media/BotCommandCast.png)
+![](https://github.com/Kaobara/Discord-DND-Items-and-Spells-Search-Bot/blob/main/media/BotCommandFind.png)
    
 The bot will automatically search up the information and send it to your Discord channel
