@@ -25,7 +25,7 @@ This program can then be run using Gradle!
 ### Inviting your bot to a Discord Server
 On the Discord Developer Portal, open the OAuth2 -> URL Generator page through the sidebar. Afterwards, tick "bot" for Scopes, and then "Send Messages" for Bot Permissions. The bottom of the page should automatically generate a URL, which you can open to invite your bot to any server you own or have the required permissions for.
 
-![](https://github.com/Kaobara/Discord-DND-Items-and-Spells-Search-Bot/blob/main/media/DiscordSetup3.png)
+![](https://github.com/Kaobara/Discord-DND-Items-and-Spells-Search-Bot/blob/main/media/DiscordInviteBot1.png)
 ![](https://github.com/Kaobara/Discord-DND-Items-and-Spells-Search-Bot/blob/main/media/DiscordSetup4.png)
 
 ## Using the Discord Bot
