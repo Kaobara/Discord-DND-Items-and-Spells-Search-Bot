@@ -45,6 +45,9 @@ dependencies {
 
     // Logging dependency
     implementation 'ch.qos.logback:logback-classic:1.3.5'
+
+    // JSon
+    implementation 'org.json:json:20171018'
 }
 
 test {
