@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 
 import com.gradle.staticScrapeService.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DiscordDnDSearchUpBot {
@@ -45,7 +46,7 @@ public class DiscordDnDSearchUpBot {
     private static String currentBotCommand;
 
     // List of all bot commands that can be done
-    private static Flux<?> botCommands(Message message) {
+    private static Flux<?> botCommands(Message message){
         if(message.getContent().contains("!" + botUsername + " cast ")) {
             currentBotCommand = "!" + botUsername + " cast ";
             System.out.println("Message ID: "+message.getChannelId().asLong());
@@ -65,10 +66,26 @@ public class DiscordDnDSearchUpBot {
     }
 
     private static Flux<Object> channelTime(Message message) {
-//        JSONWriter jsonWriter = new js
+        JSONWriter jsonWriter = new JSONWriter();
+
+        if(message.getContent().contains("currently")) {
+            String currentTime = "";
+            try {
+                currentTime = jsonWriter.getChannelTime(message.getChannelId().asLong());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
+            String finalCurrentTime = currentTime;
+            return message.getChannel()
+                    .flatMapMany(channel -> channel.createMessage(finalCurrentTime));
+        } else if(message.getContent().contains("")) {
+
+        }
 
         return message.getChannel()
-                .flatMapMany(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
+                .flatMapMany(channel -> channel.createMessage("Something went wrong!"));
 //        return message.getChannelId().asString();
     }
 
@@ -134,5 +151,9 @@ public class DiscordDnDSearchUpBot {
                     return Flux.fromIterable(messageCreateMonos);
                 }).flatMap(Flux::from);
     }
+
+
+
+
 
 }

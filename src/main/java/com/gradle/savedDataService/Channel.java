@@ -14,6 +14,7 @@ public class Channel {
     public Channel(long id) { this.id = id; }
     @JsonCreator
     public Channel(@JsonProperty("id")long id, @JsonProperty("clock")Clock clock) { this.id = id; this.clock = clock; }
+    public Channel(long id, int hr, int min, int sec) { this.id = id; this.clock = new Clock(hr, min, sec); }
 
 //    public String getClock() { return clock.getCurrentTime(); }
     public Clock getClock() { return clock; }

@@ -26,7 +26,7 @@ public class Clock {
     }
 
     public void addHr(int hr) {
-        hr += hr;
+        this.hr += hr;
 //        convertTime();
     }
 
