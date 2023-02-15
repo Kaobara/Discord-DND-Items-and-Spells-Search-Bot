@@ -1,5 +1,6 @@
 package com.gradle.discord4jDiscordBot;
 
+import com.gradle.savedDataService.JSONWriter;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
@@ -47,13 +48,28 @@ public class DiscordDnDSearchUpBot {
     private static Flux<?> botCommands(Message message) {
         if(message.getContent().contains("!" + botUsername + " cast ")) {
             currentBotCommand = "!" + botUsername + " cast ";
+            System.out.println("Message ID: "+message.getChannelId().asLong());
             return spellSearchUp(message);
         } else if(message.getContent().contains("!" + botUsername + " find ")) {
             currentBotCommand = "!" + botUsername + " find ";
             return Flux.from(itemSearchUp(message));
-        }else {
+        }
+        else if(message.getContent().contains("!" + botUsername + " Clock ")) {
+            System.out.println(message.getChannelId().asString());
+            return channelTime(message);
+        }
+
+        else {
             return Flux.empty();
         }
+    }
+
+    private static Flux<Object> channelTime(Message message) {
+//        JSONWriter jsonWriter = new js
+
+        return message.getChannel()
+                .flatMapMany(channel -> channel.createMessage("Spell not found. Please check if you spelled it correctly"));
+//        return message.getChannelId().asString();
     }
 
     private static Flux<Object> spellSearchUp(Message message) {

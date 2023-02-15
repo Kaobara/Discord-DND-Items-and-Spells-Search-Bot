@@ -1,54 +1,59 @@
 package com.gradle.savedDataService;
 
 public class Clock {
-    private int currentHour = 0;
-    private int currentMinute = 0;
-    private int currentSeconds = 0;
+    private int hr = 0;
+    private int min = 0;
+    private int sec = 0;
 
     public Clock() {
     }
 
+    public Clock(int hr, int min, int sec) {
+        this.hr = hr;
+        this.min = min;
+        this.sec = sec;
+    }
     // Note: moved time conversion from the start of process (adding and setting) to end of processing (when time is called)
     // convert time only needs to be called at the end instead of constantly through the process
     public void addSeconds(int seconds) {
-        currentSeconds += seconds;
+        sec += seconds;
 //        convertTime();
     }
 
     public void addMinutes(int minutes) {
-        currentMinute += minutes;
+        min += minutes;
 //        convertTime();
     }
 
     public void addHr(int hr) {
-        currentHour += hr;
+        hr += hr;
 //        convertTime();
     }
 
     // TODO Make sec-min-hr into a single method to remove duplicates
     private void convertSecMin() {
-        if(currentSeconds < 60) {
+        if(sec < 60) {
             return;
         }
-        currentMinute += currentSeconds/60;
-        currentSeconds = currentSeconds%60;
+        min += sec/60;
+        sec = sec%60;
         return;
     }
 
     private void convertMinHr() {
-        if(currentMinute < 60) {
+        if(min < 60) {
             return;
         }
-        currentHour += currentMinute/60;
-        currentMinute = currentMinute%60;
+        hr += min/60;
+        min = min%60;
         return;
     }
 
     private void convertHr() {
-        if(currentHour < 24) {
+        if(hr < 24) {
             return;
         }
-        currentHour = currentHour%24;
+        hr = hr%24;
     }
 
     public void convertTime() {
@@ -57,23 +62,23 @@ public class Clock {
         convertHr();
     }
 
-    public int getSec() { convertTime(); return currentSeconds; }
-    public int getMin() { convertTime(); return currentMinute; }
-    public int getHr() { convertTime(); return currentHour; }
+    public int getSec() { convertTime(); return sec; }
+    public int getMin() { convertTime(); return min; }
+    public int getHr() { convertTime(); return hr; }
 
-    public void setCurrentHour(int currentHour) {
-        this.currentHour = currentHour;
+    public void setHr(int Hr) {
+        this.hr = Hr;
     }
 
-    public void setCurrentMinute(int currentMinute) {
-        this.currentMinute = currentMinute;
+    public void setMin(int min) {
+        this.min = min;
     }
 
-    public void setCurrentSeconds(int currentSeconds) {
-        this.currentSeconds = currentSeconds;
+    public void setSec(int sec) {
+        this.sec = sec;
     }
 
-    public String getCurrentTime() {
-        return String.format("%02d:%02d:%02d", currentHour, currentMinute,currentSeconds);
+    public String stringGetCurrentTime() {
+        return String.format("%02d:%02d:%02d", hr, min,sec);
     }
 }
