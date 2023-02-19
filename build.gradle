@@ -4,11 +4,24 @@ plugins {
     id 'application'
 }
 
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'com.gradle.tutorial.FizzBuzzProcessor'
+//    }
+//}
 jar {
     manifest {
-        attributes 'Main-Class': 'com.gradle.tutorial.FizzBuzzProcessor'
+        attributes(
+                'Main-Class': 'com.gradle.discord4jDiscordBot.DiscordDnDSearchUpBot'
+        )
     }
+    baseName 'Droop'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
 
 // From https://stackoverflow.com/questions/60228404/no-tests-found-for-given-includes-when-running-gradle-tests-in-intellij-idea
 // Gradle don't know where to look for tests
@@ -21,7 +34,7 @@ tasks.withType(Test) {
 }
 
 group 'org.example'
-version '1.0-SNAPSHOT'
+version '2.0'
 
 repositories {
     mavenCentral()
@@ -53,10 +66,14 @@ dependencies {
 
 }
 
+
 test {
     useJUnitPlatform()
 }
 
+//application {
+//    mainClassName = 'com.gradle.tutorial.FizzBuzzProcessor'
+//}
 application {
-    mainClassName = 'com.gradle.tutorial.FizzBuzzProcessor'
+    mainClassName = 'com.gradle.discord4jDiscordBot.DiscordDnDSearchUpBot'
 }

@@ -1,6 +1,7 @@
 package com.gradle.discord4jDiscordBot;
 
-import com.gradle.savedDataService.JSONWriter;
+import com.gradle.savedDataService.JSONTimeWriter;
+import com.gradle.savedDataService.TimeController;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
@@ -48,6 +49,7 @@ public class DiscordDnDSearchUpBot {
     // List of all bot commands that can be done
     private static Flux<?> botCommands(Message message){
         if(message.getContent().contains("!" + botUsername + " cast ")) {
+            System.out.println("This part works");
             currentBotCommand = "!" + botUsername + " cast ";
             System.out.println("Message ID: "+message.getChannelId().asLong());
             return spellSearchUp(message);
@@ -55,7 +57,7 @@ public class DiscordDnDSearchUpBot {
             currentBotCommand = "!" + botUsername + " find ";
             return Flux.from(itemSearchUp(message));
         }
-        else if(message.getContent().contains("!" + botUsername + " Clock ")) {
+        else if(message.getContent().contains("!" + botUsername + " time ")) {
             System.out.println(message.getChannelId().asString());
             return channelTime(message);
         }
@@ -66,28 +68,49 @@ public class DiscordDnDSearchUpBot {
     }
 
     private static Flux<Object> channelTime(Message message) {
-        JSONWriter jsonWriter = new JSONWriter();
+        TimeController timeController = new TimeController();
 
+        String finalCurrentTime;
         if(message.getContent().contains("currently")) {
             String currentTime = "";
             try {
-                currentTime = jsonWriter.getChannelTime(message.getChannelId().asLong());
+                currentTime = timeController.getChannelTime(message.getChannelId().asLong());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-
-            String finalCurrentTime = currentTime;
+            finalCurrentTime = currentTime;
             return message.getChannel()
-                    .flatMapMany(channel -> channel.createMessage(finalCurrentTime));
-        } else if(message.getContent().contains("")) {
-
+                    .flatMapMany(channel -> channel.createMessage("It is currently: " + finalCurrentTime));
+        } else if(message.getContent().contains("set")) {
+            String currentTime = "";
+            try {
+                currentTime = timeController.setChannelTime(message.getChannelId().asLong(), message.getContent());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            finalCurrentTime = currentTime;
+            return message.getChannel()
+                    .flatMapMany(channel -> channel.createMessage("Time set to: " + finalCurrentTime));
+        } else if(message.getContent().contains("forward")) {
+            String currentTime = "";
+            try {
+                currentTime = timeController.forwardChannelTime(message.getChannelId().asLong(), message.getContent());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            finalCurrentTime = currentTime;
+            return message.getChannel()
+                    .flatMapMany(channel -> channel.createMessage("Time forward to: " + finalCurrentTime));
         }
 
         return message.getChannel()
                 .flatMapMany(channel -> channel.createMessage("Something went wrong!"));
 //        return message.getChannelId().asString();
     }
+
+//    private static String setEditCurrentTime(Message message) throws RuntimeException {
+//        if(message.getContent().contains("%4"))
+//    }
 
     private static Flux<Object> spellSearchUp(Message message) {
         // Name of Spell taken from message

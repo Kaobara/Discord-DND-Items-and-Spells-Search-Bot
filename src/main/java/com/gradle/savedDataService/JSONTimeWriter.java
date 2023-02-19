@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.File;
 import java.io.IOException;
 
-public class JSONWriter {
+public class JSONTimeWriter {
     final String channelDataDirectory = "DataStorage/channel.json";
 
     public JsonNode channelExists(File file, Long channelID) throws IOException {
